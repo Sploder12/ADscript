@@ -49,4 +49,56 @@ namespace ADscript
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) + getArgVal(host, args[1]);
 	}
+
+	//takes 3 args, two vals to subtract and place to store
+	void SUB(program* host, char** args)
+	{
+		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) - getArgVal(host, args[1]);
+	}
+
+	//takes 3 args, two vals to multiply and place to store
+	void MULT(program* host, char** args)
+	{
+		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) * getArgVal(host, args[1]);
+	}
+
+	//takes 3 args, two vals to divide and place to store
+	void DIV(program* host, char** args)
+	{
+		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) / getArgVal(host, args[1]);
+	}
+
+	//takes 2 args, two vals to compare
+	//result can be found in host.comparisonRet
+	void EQUAL(program* host, char** args)
+	{
+		host->comparisonRet = getArgVal(host, args[0]) == getArgVal(host, args[1]);
+	}
+
+	//takes 2 args, two vals to compare
+	//result can be found in host.comparisonRet
+	void NEQUAL(program* host, char** args)
+	{
+		host->comparisonRet = getArgVal(host, args[0]) != getArgVal(host, args[1]);
+	}
+
+	//takes 1 args, an instruction to jump to
+	void JUMP(program* host, char** args)
+	{
+		int val = getArgVal(host, args[0]);
+		if (val < host->instructionCnt)
+		{
+			host->curInstruction = val - 1; //we subtract 1 because it will be incremented right after this
+		}
+	}
+
+	//takes 1 args, an instruction to jump to
+	//uses the bool inside comparisonRet for conditional
+	void CJUMP(program* host, char** args)
+	{
+		if (host->comparisonRet)
+		{
+			JUMP(host, args);
+		}
+	}
 }

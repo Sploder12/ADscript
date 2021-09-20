@@ -11,14 +11,28 @@ namespace ADscript
 	{
 		{"VAR", {0, 2}},
 		{"PRINT", {1, 1}},
-		{"ADD", {2, 3}}
+		{"ADD", {2, 3}},
+		{"SUB", {3, 3}},
+		{"MULT", {4, 3}},
+		{"DIV", {5, 3}},
+		{"EQUAL", {6, 2}},
+		{"NEQUAL", {7, 2}},
+		{"JUMP", {8, 1}},
+		{"CJUMP", {9, 1}}
 	};
 
 	std::vector<void(*)(program*, char**)> functions =
 	{
 		VAR,
 		PRINT,
-		ADD
+		ADD,
+		SUB,
+		MULT,
+		DIV,
+		EQUAL,
+		NEQUAL,
+		JUMP,
+		CJUMP
 	};
 
 	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable()

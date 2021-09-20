@@ -25,6 +25,7 @@ namespace ADscript
 	struct program
 	{
 		unsigned int curInstruction = 0;
+		bool comparisonRet = false;
 
 		//program memory consists of a cstr ID and a byte array value
 		//memory is handled for you, the value is newed into existence and deleted out of it
