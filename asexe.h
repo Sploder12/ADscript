@@ -1,11 +1,35 @@
 #ifndef ASEXE_H
 #define ASEXE_H
 
-#include <vector>
 #include <string>
 
 namespace ADscript
 {
+	struct node
+	{
+		node(std::string ID, char* data);
+
+		node* previous = nullptr;
+		node* next = nullptr;
+
+		std::string ID;
+		char* data;
+
+		~node();
+	};
+
+	struct linkedStack
+	{
+		node* top = nullptr;
+		node* bottom = nullptr;
+
+		void push(node* elem);
+
+		void pop();
+
+		void remove(const char* id);
+	};
+
 	struct instruction
 	{
 		instruction() = default;
@@ -29,8 +53,8 @@ namespace ADscript
 
 		//program memory consists of a cstr ID and a byte array value
 		//memory is handled for you, the value is newed into existence and deleted out of it
-		//this vector is treated like a stack, dont worry about it.
-		std::vector<std::pair<std::string, char*>> programMemory;
+		//this linkd list is treated like a stack, dont worry about it.
+		linkedStack programMemory;
 
 		//array of instruction pointers
 		unsigned int instructionCnt;

@@ -1,1 +1,4 @@
-ADD 10 10 10
+VAR num $cVar
+ADD 10 num $cVar
+PRINT num
+DELETE num

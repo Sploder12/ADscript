@@ -6,6 +6,80 @@
 
 namespace ADscript
 {
+
+	node::node(std::string ID, char* data):
+		ID(ID), data(data) {}
+
+	node::~node()
+	{
+		delete[] data;
+	}
+
+	void linkedStack::push(node* elem)
+	{
+		if (bottom != nullptr)
+		{
+			bottom->next = elem;
+			elem->previous = bottom;
+		}
+			
+		bottom = elem;
+
+		if (top == nullptr)
+		{
+			top = elem;
+		}
+	}
+
+	void linkedStack::pop()
+	{
+		node* removed = bottom;
+		if (top == bottom)
+		{
+			top = nullptr;
+			bottom = nullptr;
+		}
+		else
+		{
+			bottom = bottom->previous;
+			bottom->next = nullptr;
+		}
+
+		delete removed;
+	}
+
+	void linkedStack::remove(const char* id)
+	{
+		node* cur = bottom;
+		while (cur)
+		{
+			if (cur->ID == id)
+			{
+				if (cur->previous != nullptr)
+				{
+					cur->previous->next = cur->next;
+				}
+				else
+				{
+					top = nullptr;
+				}
+
+				if (cur->next != nullptr)
+				{
+					cur->next->previous = cur->previous;
+				}
+				else
+				{
+					bottom = nullptr;
+				}
+
+				break;
+			}
+			cur = cur->previous;
+		}
+		delete cur;
+	}
+
 	instruction::instruction(unsigned int IID, unsigned int argCnt, char** args) :
 		IID(IID), argCnt(argCnt), args(args) {}
 
@@ -33,11 +107,8 @@ namespace ADscript
 	{
 		other.instructions = nullptr;
 		other.instructionCnt = 0;
-		for (std::pair<std::string, char*> thing : other.programMemory)
-		{
-			thing.second = nullptr;
-		}
-		other.programMemory.clear();
+		other.programMemory.top = nullptr;
+		other.programMemory.bottom = nullptr;
 	}
 
 	program::program(const program& other)
@@ -50,9 +121,12 @@ namespace ADscript
 			instructions[i] = new instruction(*other.instructions[i]);
 		}
 
-		for (std::pair<std::string, char*> thing : other.programMemory)
+		node* top = other.programMemory.top;
+		while (top)
 		{
-			programMemory.push_back(std::pair<std::string, char*>(thing.first, new char(*thing.second)));
+			node* newNode = new node(top->ID, new char(*top->data));
+			programMemory.push(newNode);
+			top = top->next;
 		}
 	}
 
@@ -64,8 +138,7 @@ namespace ADscript
 			curInstruction++;
 		}
 
-		unsigned int siz = programMemory.size();
-		for (unsigned int i = 0; i < siz; i++)
+		while (programMemory.top)
 		{
 			pop();
 		}
@@ -89,25 +162,27 @@ namespace ADscript
 
 	char* program::getVar(std::string id)
 	{
-		for (int i = programMemory.size() - 1; i >= 0; i--)
+		node* cur = programMemory.bottom;
+		while (cur)
 		{
-			if (programMemory[i].first == id)
+			if (cur->ID == id)
 			{
-				return programMemory[i].second;
+				return cur->data;
 			}
+			cur = cur->previous;
 		}
 		return nullptr;
 	}
 
 	void program::push(std::string id, char* val)
 	{
-		programMemory.push_back({ id, val });
+		node* newNode = new node(id, val);
+		programMemory.push(newNode);
 	}
 
 	void program::pop()
 	{
-		delete[] programMemory.back().second;
-		programMemory.pop_back();
+		programMemory.pop();
 	}
 
 	program::~program()
@@ -118,8 +193,7 @@ namespace ADscript
 		}
 		delete[] instructions;
 
-		unsigned int siz = programMemory.size();
-		for (unsigned int i = 0; i < siz; i++)
+		while (programMemory.top)
 		{
 			pop();
 		}

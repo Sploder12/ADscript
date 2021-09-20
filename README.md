@@ -57,6 +57,12 @@ variable id, initial value
 Removes a named variable from the top of the stack  
 Takes 0 arguments  
 
+**DELETE**
+Removes a named variable from the stack
+Takes 1 argument,
+name of variable
+Do note that attemping to delete things that don't exist on the stack will do nothing (except waste time).
+
 **END**  
 Ends the program early  
 Takes 0 arguments

@@ -44,6 +44,12 @@ namespace ADscript
 		host->pop();
 	}
 
+	//takes 1 arg, named value to delete
+	void DELETE(program* host, char** args)
+	{
+		host->programMemory.remove(args[0]);
+	}
+
 	//takes no args, stops program
 	void END(program* host, char** args)
 	{

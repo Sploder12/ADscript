@@ -7,8 +7,9 @@ namespace ADscript
 {
 	void VAR(program* host, char** args);
 	void POP(program* host, char** args);
+	void DELETE(program* host, char** args);
 	void END(program* host, char** args);
-
+	
 	void PRINT(program* host, char** args);
 
 	void SET(program* host, char** args);

@@ -11,23 +11,25 @@ namespace ADscript
 	{
 		{"VAR", {0, 2}},
 		{"POP", {1, 0}},
-		{"END", {2, 0}},
-		{"PRINT", {3, 1}},
-		{"SET", {4, 2}},
-		{"ADD", {5, 3}},
-		{"SUB", {6, 3}},
-		{"MULT", {7, 3}},
-		{"DIV", {8, 3}},
-		{"EQUAL", {9, 2}},
-		{"NEQUAL", {10, 2}},
-		{"JUMP", {11, 1}},
-		{"CJUMP", {12, 1}}
+		{"DELETE", {2, 1}},
+		{"END", {3, 0}},
+		{"PRINT", {4, 1}},
+		{"SET", {5, 2}},
+		{"ADD", {6, 3}},
+		{"SUB", {7, 3}},
+		{"MULT", {8, 3}},
+		{"DIV", {9, 3}},
+		{"EQUAL", {10, 2}},
+		{"NEQUAL", {11, 2}},
+		{"JUMP", {12, 1}},
+		{"CJUMP", {13, 1}}
 	};
 
 	std::vector<void(*)(program*, char**)> functions =
 	{
 		VAR,
 		POP,
+		DELETE,
 		END,
 		PRINT,
 		SET,
