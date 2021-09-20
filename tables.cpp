@@ -10,21 +10,27 @@ namespace ADscript
 	std::map<std::string, std::pair<unsigned int, unsigned int>> functionTable =
 	{
 		{"VAR", {0, 2}},
-		{"PRINT", {1, 1}},
-		{"ADD", {2, 3}},
-		{"SUB", {3, 3}},
-		{"MULT", {4, 3}},
-		{"DIV", {5, 3}},
-		{"EQUAL", {6, 2}},
-		{"NEQUAL", {7, 2}},
-		{"JUMP", {8, 1}},
-		{"CJUMP", {9, 1}}
+		{"POP", {1, 0}},
+		{"END", {2, 0}},
+		{"PRINT", {3, 1}},
+		{"SET", {4, 2}},
+		{"ADD", {5, 3}},
+		{"SUB", {6, 3}},
+		{"MULT", {7, 3}},
+		{"DIV", {8, 3}},
+		{"EQUAL", {9, 2}},
+		{"NEQUAL", {10, 2}},
+		{"JUMP", {11, 1}},
+		{"CJUMP", {12, 1}}
 	};
 
 	std::vector<void(*)(program*, char**)> functions =
 	{
 		VAR,
+		POP,
+		END,
 		PRINT,
+		SET,
 		ADD,
 		SUB,
 		MULT,

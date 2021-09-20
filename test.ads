@@ -1,2 +1,1 @@
-PRINT $cVar
-JUMP 0
+ADD 10 10 10

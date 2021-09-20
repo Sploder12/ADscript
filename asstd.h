@@ -6,9 +6,12 @@
 namespace ADscript
 {
 	void VAR(program* host, char** args);
+	void POP(program* host, char** args);
+	void END(program* host, char** args);
 
 	void PRINT(program* host, char** args);
 
+	void SET(program* host, char** args);
 	void ADD(program* host, char** args);
 	void SUB(program* host, char** args);
 	void MULT(program* host, char** args);

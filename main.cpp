@@ -23,7 +23,7 @@ int main()
 
 	ADscript::program prgm = ADscript::compile("test.ads");
 
-	for (unsigned int i = 0; i < 10; i++)
+	for (unsigned int i = 0; i < 1000000; i++)
 	{
 		
 		prgm.run();

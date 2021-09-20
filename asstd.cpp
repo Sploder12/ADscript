@@ -38,10 +38,28 @@ namespace ADscript
 		host->push(args[0], (char*)new int(getArgVal(host, args[1])));
 	}
 
+	//takes no args, pops top value from stack
+	void POP(program* host, char** args)
+	{
+		host->pop();
+	}
+
+	//takes no args, stops program
+	void END(program* host, char** args)
+	{
+		host->curInstruction = host->instructionCnt;
+	}
+
 	//takes 1 arg, something to print
 	void PRINT(program* host, char** args)
 	{
 		std::cout << getArgVal(host, args[0]) << '\n';
+	}
+
+	//takes 2 args, value and place to store
+	void SET(program* host, char** args)
+	{
+		*getArgPtr(host, args[0]) = getArgVal(host, args[1]);
 	}
 
 	//takes 3 args, two vals to add and place to store

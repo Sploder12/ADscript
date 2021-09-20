@@ -49,5 +49,6 @@
     <None Include="test.ads">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
