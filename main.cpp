@@ -17,10 +17,15 @@
 int main()
 {
 	
-	for (unsigned int i = 0; i < 100000000; i++)
-	{
-		ADscript::program prgm = ADscript::compile("test.ads");
+	int myVar = 200;
 
+	ADscript::registerVariable("cVar", (char*)&myVar);
+
+	ADscript::program prgm = ADscript::compile("test.ads");
+
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		
 		prgm.run();
 	}
 	

@@ -31,4 +31,21 @@ namespace ADscript
 		return functions;
 	}
 
+	std::map<std::string, char*> variableTable;
+
+	std::map<std::string, char*>& getVariableTable()
+	{
+		return variableTable;
+	}
+
+	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**))
+	{
+		functionTable.insert({id, {functions.size(), argCount}});
+		functions.push_back(func);
+	}
+
+	void registerVariable(std::string id, char* var)
+	{
+		variableTable.insert({ id, var });
+	}
 }

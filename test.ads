@@ -1,3 +1,5 @@
-VAR coolname 10
-ADD coolname 50 coolname
+PRINT $cVar
+VAR coolname $cVar
 PRINT coolname
+ADD coolname 50 $cVar
+PRINT $cVar
