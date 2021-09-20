@@ -19,6 +19,7 @@ namespace ADscript
 		//type safety is only checked loosely by compiler
 		char** args; 
 
+		~instruction();
 	};
 
 	struct program
@@ -34,6 +35,12 @@ namespace ADscript
 		unsigned int instructionCnt;
 		instruction** instructions;
 
+		program() = default;
+
+		program(program&& other) noexcept; //move
+
+		program(const program& other); //copy
+
 		void dumpInstructions();
 
 		char* getVar(std::string id);
@@ -43,6 +50,8 @@ namespace ADscript
 		void pop();
 
 		void run();
+
+		~program();
 	};
 }
 #endif

@@ -16,11 +16,14 @@
 
 int main()
 {
+	
+	for (unsigned int i = 0; i < 100000000; i++)
+	{
+		ADscript::program prgm = ADscript::compile("test.ads");
 
-	ADscript::program prgm = ADscript::compile("test.ads");
-
-	prgm.dumpInstructions();
-	prgm.run();
+		prgm.run();
+	}
+	
 
 	return 0;
 }
