@@ -65,8 +65,8 @@ namespace ADscript
 					{
 						if (isNumeric(split[i]))
 						{
-							int val = std::stoi(split[i]);
-							args[i - 1] = (char*)new int(val);
+							AD_DEFAULT_TYPE val = std::stol(split[i]);
+							args[i - 1] = (char*)new AD_DEFAULT_TYPE(val);
 						}
 						else
 						{
@@ -77,7 +77,7 @@ namespace ADscript
 						}
 					}
 
-					instructions.push_back(new instruction{ iid, split.size() - 1, args});
+					instructions.push_back(new instruction{ iid, unsigned int(split.size() - 1), args});
 				}
 				catch (...)
 				{

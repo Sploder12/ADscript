@@ -62,7 +62,7 @@ namespace ADscript
 
 	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**))
 	{
-		functionTable.insert({id, {functions.size(), argCount}});
+		functionTable.insert({id, {unsigned int(functions.size()), argCount}});
 		functions.push_back(func);
 	}
 

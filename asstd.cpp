@@ -6,7 +6,7 @@
 
 namespace ADscript
 {
-	int* getArgPtr(program* host, char* arg)
+	AD_DEFAULT_TYPE* getArgPtr(program* host, char* arg)
 	{
 		char* ptr;
 
@@ -15,15 +15,15 @@ namespace ADscript
 			auto& vTable = getVariableTable();
 
 			ptr = vTable.at(arg + 1);
-			return (int*)ptr;
+			return (AD_DEFAULT_TYPE*)ptr;
 		}
 
 		ptr = host->getVar(arg);
 		if (ptr == nullptr)
 		{
-			return (int*)arg;
+			return (AD_DEFAULT_TYPE*)arg;
 		}
-		return (int*)ptr;
+		return (AD_DEFAULT_TYPE*)ptr;
 	}
 
 	int getArgVal(program* host, char* arg)
@@ -35,7 +35,7 @@ namespace ADscript
 	//note that the varID has already been converted by the compiler to an index
 	void VAR(program* host, char** args)
 	{
-		host->push(args[0], (char*)new int(getArgVal(host, args[1])));
+		host->push(args[0], (char*)new AD_DEFAULT_TYPE(getArgVal(host, args[1])));
 	}
 
 	//takes no args, pops top value from stack
@@ -109,7 +109,7 @@ namespace ADscript
 	//takes 1 args, an instruction to jump to
 	void JUMP(program* host, char** args)
 	{
-		int val = getArgVal(host, args[0]);
+		AD_DEFAULT_TYPE val = getArgVal(host, args[0]);
 		if (val < host->instructionCnt)
 		{
 			host->curInstruction = val - 1; //we subtract 1 because it will be incremented right after this

@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+#ifndef AD_DEFAULT_TYPE
+#define AD_DEFAULT_TYPE int
+#endif
+
 namespace ADscript
 {
 	
