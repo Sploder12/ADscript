@@ -54,6 +54,9 @@ namespace ADscript
 		return true;
 	}
 
+	//forward declaration so that optimizations can call optimize again
+	void optimize(instruction* instr);
+
 	void optimizeSET(instruction* instr)
 	{
 		//Setting a variable equal to itself
@@ -63,11 +66,154 @@ namespace ADscript
 			delete instr->args[0];
 			delete instr->args[1];
 			delete[] instr->args;
+			instr->argCnt = 0;
+			//good practice when changing instruction type to try and optimize further (even if the optimization might not exist)
+			optimize(instr); 
+		}
+	}
+
+	void optimizeADD(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //adding 0
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (*instr->args[1] == 0) //adding 0
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[1];
+			*instr->args[1] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+	}
+
+	void optimizeSUB(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //subtracting 0
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (*instr->args[1] == 0) //subtracting 0
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[1];
+			*instr->args[1] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+	}
+
+	void optimizeMULT(instruction* instr)
+	{
+		if (*instr->args[0] == 1) //multiplying 1
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (*instr->args[1] == 1) //multiplying 1
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[1];
+			*instr->args[1] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+	}
+
+	void optimizeDIV(instruction* instr)
+	{
+		if (*instr->args[0] == 1) //dividing 1
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (*instr->args[1] == 1) //dividing 1
+		{
+			instr->function = getFunctions()[SET_ID];
+			*instr->args[0] = *instr->args[1];
+			*instr->args[1] = *instr->args[2];
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+	}
+
+	void optimizeHOPBACK(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //moving nowhere
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete[] instr->args;
+			instr->argCnt = 0;
+			optimize(instr);
+		}
+	}
+
+	void optimizeHOP(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //moving nowhere
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete[] instr->args;
+			instr->argCnt = 0;
+			optimize(instr);
+		}
+	}
+
+	void optimizeCHOPBACK(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //moving nowhere
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete[] instr->args;
+			instr->argCnt = 0;
+			optimize(instr);
+		}
+	}
+
+	void optimizeCHOP(instruction* instr)
+	{
+		if (*instr->args[0] == 0) //moving nowhere
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete[] instr->args;
+			instr->argCnt = 0;
+			optimize(instr);
 		}
 	}
 
 	std::map<void(*)(program*, char**), void(*)(instruction*)> optimizationTable = {
-		{SET, optimizeSET}
+		{SET, optimizeSET},
+		{ADD, optimizeADD},
+		{SUB, optimizeSUB},
+		{MULT, optimizeMULT},
+		{DIV, optimizeDIV},
+		{HOPBACK, optimizeHOPBACK},
+		{HOP, optimizeHOP},
+		{CHOPBACK, optimizeCHOPBACK},
+		{CHOP, optimizeCHOP}
 	};
 
 	void registerOptimization(void(*instr)(program*, char**), void(*func)(instruction*))

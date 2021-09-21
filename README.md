@@ -41,11 +41,11 @@ However, the script can be "compiled" prior to registering.
 
 #### Optimization Registering
 
-Optimization Registering allows for the user to specify optimizations by instruction.
-Doing do requires a function that takes in and modifies an instruction pointer.
-Optimizations will only replace existing instructions with more fitting ones.
-For example `ADD 0 foo foo` would be replaced with `NONE`.
-Optimizations should not change program execution but doing so is legal.
+Optimization Registering allows for the user to specify optimizations by instruction.  
+Doing do requires a function that takes in and modifies an instruction pointer.  
+Optimizations will only replace existing instructions with more fitting ones.  
+For example `ADD 0 foo foo` would be replaced with `NONE`.  
+Optimizations should not change program execution but doing so is legal.  
 Optimizations do not take into account previous or subsequent instructions. It works one at a time.
 
 ### Using Registered Stuff
@@ -161,6 +161,6 @@ Takes 1 value,
 how far to jump forwards
 
 **NONE**  
-Does nothing.
-Takes 0 values,
+Does nothing.  
+Takes 0 values,  
 mainly used for optimizations
