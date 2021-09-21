@@ -125,4 +125,44 @@ namespace ADscript
 			JUMP(host, args);
 		}
 	}
+
+	//takes 1 arg, how many instructions to jump backwards
+	void HOPBACK(program* host, char** args)
+	{
+		AD_DEFAULT_TYPE val = getArgVal(host, args[0]);
+		host->curInstruction -= val;
+	}
+
+	//takes 1 arg, how many instructions to jump forwards
+	void HOP(program* host, char** args)
+	{
+		AD_DEFAULT_TYPE val = getArgVal(host, args[0]);
+		host->curInstruction += val;
+	}
+
+	//takes 1 arg, how many instructions to jump backwards
+	//conditionally
+	void CHOPBACK(program* host, char** args)
+	{
+		if (host->comparisonRet)
+		{
+			HOPBACK(host, args);
+		}
+	}
+
+	//takes 1 arg, how many instructions to jump forwards
+	//conditionally
+	void CHOP(program* host, char** args)
+	{
+		if (host->comparisonRet)
+		{
+			HOP(host, args);
+		}
+	}
+	
+	//takes 0 args, does nothing. Mainly exists for optimizations
+	void NONE(program* host, char** args)
+	{
+
+	}
 }

@@ -9,20 +9,25 @@ namespace ADscript
 	//function takes the host program and the args as params. Host program is given so program vars table can be accessed
 	std::map<std::string, std::pair<unsigned int, unsigned int>> functionTable =
 	{
-		{"VAR", {0, 2}},
-		{"POP", {1, 0}},
-		{"DELETE", {2, 1}},
-		{"END", {3, 0}},
-		{"PRINT", {4, 1}},
-		{"SET", {5, 2}},
-		{"ADD", {6, 3}},
-		{"SUB", {7, 3}},
-		{"MULT", {8, 3}},
-		{"DIV", {9, 3}},
-		{"EQUAL", {10, 2}},
-		{"NEQUAL", {11, 2}},
-		{"JUMP", {12, 1}},
-		{"CJUMP", {13, 1}}
+		{"VAR", {VAR_ID, 2}},
+		{"POP", {POP_ID, 0}},
+		{"DELETE", {DELETE_ID, 1}},
+		{"END", {END_ID, 0}},
+		{"PRINT", {PRINT_ID, 1}},
+		{"SET", {SET_ID, 2}},
+		{"ADD", {ADD_ID, 3}},
+		{"SUB", {SUB_ID, 3}},
+		{"MULT", {MULT_ID, 3}},
+		{"DIV", {DIV_ID, 3}},
+		{"EQUAL", {EQUAL_ID, 2}},
+		{"NEQUAL", {NEQUAL_ID, 2}},
+		{"JUMP", {JUMP_ID, 1}},
+		{"CJUMP", {CJUMP_ID, 1}},
+		{"HOPBACK", {HOPBACK_ID, 1}},
+		{"HOP", {HOP_ID, 1}},
+		{"CHOPBACK", {CHOPBACK_ID, 1}},
+		{"CHOP", {CHOP_ID, 1}},
+		{"NONE", {NONE_ID, 0}}
 	};
 
 	std::vector<void(*)(program*, char**)> functions =
@@ -40,7 +45,12 @@ namespace ADscript
 		EQUAL,
 		NEQUAL,
 		JUMP,
-		CJUMP
+		CJUMP,
+		HOPBACK,
+		HOP,
+		CHOPBACK,
+		CHOP,
+		NONE
 	};
 
 	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable()

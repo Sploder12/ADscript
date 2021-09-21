@@ -1,9 +1,12 @@
 #include "compiler.h"
 
+#include "asstd.h"
+
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace ADscript
 {
@@ -26,6 +29,63 @@ namespace ADscript
 		default:
 			return false;
 		}	
+	}
+
+	bool compStr(char* str1, char* str2)
+	{
+		char* chr = &str1[0];
+		char* ochr = &str2[0];
+		while (*chr != '\0')
+		{
+			if (*ochr == '\0')
+			{
+				return false;
+			}
+			else if (*chr == *ochr)
+			{
+				chr += 1;
+				ochr += 1;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void optimizeSET(instruction* instr)
+	{
+		//Setting a variable equal to itself
+		if (compStr(instr->args[0], instr->args[1]))
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			delete[] instr->args;
+		}
+	}
+
+	std::map<void(*)(program*, char**), void(*)(instruction*)> optimizationTable = {
+		{SET, optimizeSET}
+	};
+
+	void registerOptimization(void(*instr)(program*, char**), void(*func)(instruction*))
+	{
+		optimizationTable.insert(std::pair<void(*)(program*, char**), void(*)(instruction*)>(instr, func));
+	}
+
+	void optimize(instruction* instr)
+	{
+		try
+		{
+			auto func = optimizationTable.at(instr->function);
+			func(instr);
+		}
+		catch (...)
+		{
+			//This just means no optimization exists, not an error
+		}
 	}
 
 	program compile(const char* filename)
@@ -77,7 +137,8 @@ namespace ADscript
 						}
 					}
 
-					instructions.push_back(new instruction{ iid, unsigned int(split.size() - 1), args});
+					instructions.push_back(new instruction{ getFunctions()[iid], unsigned int(split.size() - 1), args});
+					optimize(instructions.back());
 				}
 				catch (...)
 				{
@@ -93,7 +154,6 @@ namespace ADscript
 			{
 				opt.instructions[i] = instructions[i];
 			}
-			
 			
 			return opt;
 		}

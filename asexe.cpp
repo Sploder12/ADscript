@@ -80,8 +80,8 @@ namespace ADscript
 		delete cur;
 	}
 
-	instruction::instruction(unsigned int IID, unsigned int argCnt, char** args) :
-		IID(IID), argCnt(argCnt), args(args) {}
+	instruction::instruction(void(*function)(program*, char**), unsigned int argCnt, char** args) :
+		function(function), argCnt(argCnt), args(args) {}
 
 	instruction::~instruction()
 	{
@@ -92,11 +92,10 @@ namespace ADscript
 		delete[] args;
 	}
 
-	void doInstruction(instruction* instr, program* host)
+
+	void instruction::exe(program* host)
 	{
-		auto& funcs = getFunctions();
-		auto func = funcs[instr->IID];
-		func(host, instr->args);
+		function(host, this->args);
 	}
 
 	program::program(program&& other) noexcept
@@ -134,7 +133,8 @@ namespace ADscript
 	{
 		while (curInstruction < instructionCnt)
 		{
-			doInstruction(instructions[curInstruction], this);
+			
+			instructions[curInstruction]->exe(this);
 			curInstruction++;
 		}
 
@@ -151,7 +151,7 @@ namespace ADscript
 		for (unsigned int i = 0; i < instructionCnt; i++)
 		{
 			instruction* instr = instructions[i];
-			std::cout << "Instruction " << i << " Function:" << instr->IID << " with ArgCount:" << instr->argCnt << " Args: ";
+			std::cout << "Instruction " << i << " Function:" << instr->function << " with ArgCount:" << instr->argCnt << " Args: ";
 			for (unsigned int j = 0; j < instr->argCnt; j++)
 			{
 				std::cout << instr->args[j] << " ";

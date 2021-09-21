@@ -15,7 +15,7 @@ All lines of the script can be abstracted as:
 
 The language is "compiled" into a program structure.  
 Compiling simply creates an array of instructions.  
-Each of these instructions includes a function ID and all the args for the function.  
+Each of these instructions includes a function ptr and all the args for the function.  
 The compiler will only check if the argument count is the same as what is expected, type safety is not guarenteed.  
 All standard functions assume that everything is of type int.  
 
@@ -38,6 +38,15 @@ However, the script can be "compiled" prior to registering.
 `ADscript::registerVariable` can be called with the following parameters:  
 `std::string` ID (what will be used in the script)  
 `char*` address (the address of the variable as a `char*`)  
+
+#### Optimization Registering
+
+Optimization Registering allows for the user to specify optimizations by instruction.
+Doing do requires a function that takes in and modifies an instruction pointer.
+Optimizations will only replace existing instructions with more fitting ones.
+For example `ADD 0 foo foo` would be replaced with `NONE`.
+Optimizations should not change program execution but doing so is legal.
+Optimizations do not take into account previous or subsequent instructions. It works one at a time.
 
 ### Using Registered Stuff
 
@@ -130,3 +139,28 @@ instruction number
 Conditionally jumps to an specific instruction number.  
 Takes 1 value,  
 instruction number
+
+**HOPBACK**  
+Jumps a certain amount of instructions back.  
+Takes 1 value,  
+how far to jump backwards
+
+**HOP**  
+Jumps a certain amount of instructions forward.  
+Takes 1 value,  
+how far to jump forwards
+
+**CHOPBACK**  
+Conditionally jumps a certain amount of instructions back.  
+Takes 1 value,  
+how far to jump backwards
+
+**CHOP**  
+Conditionally jumps a certain amount of instructions forward.  
+Takes 1 value,  
+how far to jump forwards
+
+**NONE**  
+Does nothing.
+Takes 0 values,
+mainly used for optimizations

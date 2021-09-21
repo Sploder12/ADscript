@@ -1,4 +1,3 @@
 VAR num $cVar
-ADD 10 num $cVar
+SET num num
 PRINT num
-DELETE num

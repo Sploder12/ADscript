@@ -23,6 +23,13 @@ namespace ADscript
 
 	void JUMP(program* host, char** args);
 	void CJUMP(program* host, char** args);
+
+	void HOPBACK(program* host, char** args);
+	void HOP(program* host, char** args);
+	void CHOPBACK(program* host, char** args);
+	void CHOP(program* host, char** args);
+	
+	void NONE(program* host, char** args);
 }
 
 #endif

@@ -30,18 +30,22 @@ namespace ADscript
 		void remove(const char* id);
 	};
 
+	struct program;
+
 	struct instruction
 	{
 		instruction() = default;
 
-		instruction(unsigned int IID, unsigned int argCnt, char** args);
+		instruction(void(*function)(program*, char**), unsigned int argCnt, char** args);
 
-		unsigned int IID;
+		void(*function)(program*, char**);
 		unsigned int argCnt;
 		
 		//args stored as array of byte array
 		//type safety is only checked loosely by compiler
 		char** args; 
+
+		void exe(program* host);
 
 		~instruction();
 	};
