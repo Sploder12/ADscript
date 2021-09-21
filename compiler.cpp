@@ -51,7 +51,8 @@ namespace ADscript
 				return false;
 			}
 		}
-		return true;
+
+		return (*ochr == '\0');
 	}
 
 	//forward declaration so that optimizations can call optimize again
@@ -74,19 +75,19 @@ namespace ADscript
 
 	void optimizeADD(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //adding 0
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //adding 0
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
 		}
-		else if (*instr->args[1] == 0) //adding 0
+		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 0) //adding 0
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[1];
-			*instr->args[1] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[1]);
+			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
@@ -95,19 +96,19 @@ namespace ADscript
 
 	void optimizeSUB(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //subtracting 0
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //subtracting 0
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
 		}
-		else if (*instr->args[1] == 0) //subtracting 0
+		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 0) //subtracting 0
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[1];
-			*instr->args[1] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[1]);
+			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
@@ -116,19 +117,19 @@ namespace ADscript
 
 	void optimizeMULT(instruction* instr)
 	{
-		if (*instr->args[0] == 1) //multiplying 1
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //multiplying 1
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
 		}
-		else if (*instr->args[1] == 1) //multiplying 1
+		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 1) //multiplying 1
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[1];
-			*instr->args[1] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[1]);
+			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
@@ -137,19 +138,19 @@ namespace ADscript
 
 	void optimizeDIV(instruction* instr)
 	{
-		if (*instr->args[0] == 1) //dividing 1
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //dividing 1
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
 		}
-		else if (*instr->args[1] == 1) //dividing 1
+		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 1) //dividing 1
 		{
 			instr->function = getFunctions()[SET_ID];
-			*instr->args[0] = *instr->args[1];
-			*instr->args[1] = *instr->args[2];
+			std::swap(instr->args[0], instr->args[1]);
+			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
 			optimize(instr);
@@ -158,7 +159,7 @@ namespace ADscript
 
 	void optimizeHOPBACK(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //moving nowhere
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
 		{
 			instr->function = getFunctions()[NONE_ID];
 			delete instr->args[0];
@@ -170,7 +171,7 @@ namespace ADscript
 
 	void optimizeHOP(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //moving nowhere
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
 		{
 			instr->function = getFunctions()[NONE_ID];
 			delete instr->args[0];
@@ -182,7 +183,7 @@ namespace ADscript
 
 	void optimizeCHOPBACK(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //moving nowhere
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
 		{
 			instr->function = getFunctions()[NONE_ID];
 			delete instr->args[0];
@@ -194,7 +195,7 @@ namespace ADscript
 
 	void optimizeCHOP(instruction* instr)
 	{
-		if (*instr->args[0] == 0) //moving nowhere
+		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
 		{
 			instr->function = getFunctions()[NONE_ID];
 			delete instr->args[0];
@@ -272,13 +273,19 @@ namespace ADscript
 						if (isNumeric(split[i]))
 						{
 							AD_DEFAULT_TYPE val = std::stol(split[i]);
-							args[i - 1] = (char*)new AD_DEFAULT_TYPE(val);
+							char* mval = new char[sizeof(AD_DEFAULT_TYPE) + 1];
+							char* cval = (char*)new AD_DEFAULT_TYPE(val);
+							std::copy(cval, cval+sizeof(AD_DEFAULT_TYPE), mval + 1);
+							delete cval;
+							mval[0] = 'c'; //c for const!
+							args[i - 1] = mval;
 						}
 						else
 						{
-							char* writable = new char[split[i].size() + 1];
-							std::copy(split[i].begin(), split[i].end(), writable);
-							writable[split[i].size()] = '\0';
+							char* writable = new char[split[i].size() + 2];
+							std::copy(split[i].begin(), split[i].end(), writable + 1);
+							writable[split[i].size()+1] = '\0';
+							writable[0] = 'v'; //v for var!
 							args[i - 1] = writable;
 						}
 					}

@@ -1,29 +1,40 @@
 #include "asstd.h"
 
-#include "tables.h"
-
 #include <iostream>
 
 namespace ADscript
 {
+	//can be assumed that a value is a variable otherwise
+	bool isConst(char* str)
+	{
+		return (str[0] == 'c');
+	}
+
+	AD_DEFAULT_TYPE getConstVal(char* str)
+	{
+		return *(AD_DEFAULT_TYPE*)(str + 1);
+	}
+
 	AD_DEFAULT_TYPE* getArgPtr(program* host, char* arg)
 	{
-		char* ptr;
-
-		if (arg[0] == '$')
+		if (isConst(arg))
 		{
-			auto& vTable = getVariableTable();
-
-			ptr = vTable.at(arg + 1);
-			return (AD_DEFAULT_TYPE*)ptr;
+			return (AD_DEFAULT_TYPE*)(arg+1);
 		}
-
-		ptr = host->getVar(arg);
-		if (ptr == nullptr)
+		else
 		{
-			return (AD_DEFAULT_TYPE*)arg;
+			if (arg[1] == '$')
+			{
+				auto& vTable = getVariableTable();
+
+				char* tmp = arg + 2;
+
+				arg = vTable.at(tmp);
+				return (AD_DEFAULT_TYPE*)arg;
+			}
+
+			return (AD_DEFAULT_TYPE*)host->getVar(arg);
 		}
-		return (AD_DEFAULT_TYPE*)ptr;
 	}
 
 	int getArgVal(program* host, char* arg)
