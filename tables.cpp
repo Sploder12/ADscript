@@ -23,10 +23,7 @@ namespace ADscript
 		{"NEQUAL", {NEQUAL_ID, 2}},
 		{"JUMP", {JUMP_ID, 1}},
 		{"CJUMP", {CJUMP_ID, 1}},
-		{"HOPBACK", {HOPBACK_ID, 1}},
-		{"HOP", {HOP_ID, 1}},
-		{"CHOPBACK", {CHOPBACK_ID, 1}},
-		{"CHOP", {CHOP_ID, 1}},
+		{"MARK", {MARK_ID, 1}},
 		{"NONE", {NONE_ID, 0}}
 	};
 
@@ -46,10 +43,7 @@ namespace ADscript
 		NEQUAL,
 		JUMP,
 		CJUMP,
-		HOPBACK,
-		HOP,
-		CHOPBACK,
-		CHOP,
+		MARK,
 		NONE
 	};
 

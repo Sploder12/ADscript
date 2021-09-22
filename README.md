@@ -131,34 +131,19 @@ The result is stored inside the programs comparisonRet bool.
 comparisonRet is used by other functions such as CJUMP.
 
 **JUMP**  
-Jumps to an specific instruction number.  
+Jumps to a marker.  
 Takes 1 value,  
 instruction number
 
 **CJUMP**  
-Conditionally jumps to an specific instruction number.  
+Conditionally jumps to a marker.  
 Takes 1 value,  
 instruction number
 
-**HOPBACK**  
-Jumps a certain amount of instructions back.  
-Takes 1 value,  
-how far to jump backwards
-
-**HOP**  
-Jumps a certain amount of instructions forward.  
-Takes 1 value,  
-how far to jump forwards
-
-**CHOPBACK**  
-Conditionally jumps a certain amount of instructions back.  
-Takes 1 value,  
-how far to jump backwards
-
-**CHOP**  
-Conditionally jumps a certain amount of instructions forward.  
-Takes 1 value,  
-how far to jump forwards
+**MARK**  
+Marks positions to jump to.
+Takes 1 value,
+a marker name
 
 **NONE**  
 Does nothing.  

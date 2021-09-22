@@ -1,4 +1,5 @@
 VAR num $cVar
-NONE
+JUMP 4
 SET num 100
 PRINT num
+MARK 4

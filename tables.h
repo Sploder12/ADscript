@@ -25,11 +25,8 @@
 #define NEQUAL_ID 11
 #define JUMP_ID 12
 #define CJUMP_ID 13
-#define HOPBACK_ID 14
-#define HOP_ID 15
-#define CHOPBACK_ID 16
-#define CHOP_ID 17
-#define NONE_ID 18
+#define MARK_ID 14
+#define NONE_ID 15
 
 namespace ADscript
 {

@@ -194,64 +194,12 @@ namespace ADscript
 		}
 	}
 
-	void optimizeHOPBACK(instruction* instr)
-	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
-		{
-			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete[] instr->args;
-			instr->argCnt = 0;
-			optimize(instr);
-		}
-	}
-
-	void optimizeHOP(instruction* instr)
-	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
-		{
-			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete[] instr->args;
-			instr->argCnt = 0;
-			optimize(instr);
-		}
-	}
-
-	void optimizeCHOPBACK(instruction* instr)
-	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
-		{
-			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete[] instr->args;
-			instr->argCnt = 0;
-			optimize(instr);
-		}
-	}
-
-	void optimizeCHOP(instruction* instr)
-	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //moving nowhere
-		{
-			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete[] instr->args;
-			instr->argCnt = 0;
-			optimize(instr);
-		}
-	}
-
 	std::map<void(*)(program*, char**), void(*)(instruction*)> optimizationTable = {
 		{SET, optimizeSET},
 		{ADD, optimizeADD},
 		{SUB, optimizeSUB},
 		{MULT, optimizeMULT},
 		{DIV, optimizeDIV},
-		{HOPBACK, optimizeHOPBACK},
-		{HOP, optimizeHOP},
-		{CHOPBACK, optimizeCHOPBACK},
-		{CHOP, optimizeCHOP}
 	};
 
 	void registerOptimization(void(*instr)(program*, char**), void(*func)(instruction*))
@@ -269,6 +217,66 @@ namespace ADscript
 		catch (...)
 		{
 			//This just means no optimization exists, not an error
+		}
+	}
+
+	//this is the BIG BOY optimizer, it doesn't have customizable optimizations but it does have more meaningful optimizations
+	//It is highly highly recommended that the peephole optimizations are performed prior to this.
+	void fullOptimize(std::vector<instruction*>* instructions)
+	{
+		//final pass, remove NONE
+		std::vector<instruction*> tmp;
+		tmp.reserve(instructions->size());
+
+		for (auto instr : *instructions) //remove NONE
+		{
+			if (instr->function != NONE)
+			{
+				tmp.push_back(instr);
+			}
+			else
+			{
+				delete instr;
+			}
+		}
+		*instructions = tmp;
+		tmp.clear();
+		tmp.reserve(instructions->size());
+
+
+		//@TODO big boy optimizations
+
+
+	}
+
+	//converts the marker into a line number
+	void setMarkerLocations(unsigned int instructionCnt, instruction** instructions)
+	{
+		std::map<std::string, unsigned int> markers;
+
+		for (unsigned int i = 0; i < instructionCnt; i++)
+		{
+			if (instructions[i]->function == MARK)
+			{
+				markers.insert(std::pair<std::string, unsigned int>(instructions[i]->args[0], i));
+				char* tmp = new char[sizeof(AD_DEFAULT_TYPE) + 1];
+				*(int*)(tmp + 1) = (int)i;
+				tmp[0] = 'c';
+				std::swap(tmp, instructions[i]->args[0]);
+				delete[] tmp;
+			}
+		}
+
+		for (int i = 0; i < instructionCnt; i++)
+		{
+			if (instructions[i]->function == JUMP)
+			{
+				char* tmp = new char[sizeof(AD_DEFAULT_TYPE) + 1];
+				*(int*)(tmp+1) = (int)markers.at(instructions[i]->args[0]);
+				tmp[0] = 'c';
+				std::swap(tmp, instructions[i]->args[0]);
+				delete[] tmp;
+			}
 		}
 	}
 
@@ -337,6 +345,9 @@ namespace ADscript
 			}
 
 			file.close();
+
+			fullOptimize(&instructions);
+
 			program opt;
 			opt.instructions = new instruction*[instructions.size()];
 			opt.instructionCnt = instructions.size();
@@ -344,6 +355,8 @@ namespace ADscript
 			{
 				opt.instructions[i] = instructions[i];
 			}
+
+			setMarkerLocations(opt.instructionCnt, opt.instructions);
 			
 			return opt;
 		}

@@ -1,4 +1,6 @@
 VAR num $cVar
-SET num num
-ADD 50 50 num
+NONE
+JUMP art
+SET num 100
 PRINT num
+MARK art
