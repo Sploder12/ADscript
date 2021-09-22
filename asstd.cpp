@@ -5,11 +5,12 @@
 namespace ADscript
 {
 	//can be assumed that a value is a variable otherwise
-	bool isConst(char* str)
+	inline bool isConst(char* str)
 	{
 		return (str[0] == 'c');
 	}
 
+	//getArgVal could be used instead but this is more direct
 	AD_DEFAULT_TYPE getConstVal(char* str)
 	{
 		return *(AD_DEFAULT_TYPE*)(str + 1);
@@ -27,10 +28,7 @@ namespace ADscript
 			{
 				auto& vTable = getVariableTable();
 
-				char* tmp = arg + 2;
-
-				arg = vTable.at(tmp);
-				return (AD_DEFAULT_TYPE*)arg;
+				return (AD_DEFAULT_TYPE*)vTable.at(arg + 2);
 			}
 
 			return (AD_DEFAULT_TYPE*)host->getVar(arg);
@@ -172,8 +170,5 @@ namespace ADscript
 	}
 	
 	//takes 0 args, does nothing. Mainly exists for optimizations
-	void NONE(program* host, char** args)
-	{
-
-	}
+	void NONE(program* host, char** args) {}
 }

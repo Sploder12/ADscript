@@ -75,7 +75,17 @@ namespace ADscript
 
 	void optimizeADD(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //adding 0
+
+		if (isConst(instr->args[0]) && isConst(instr->args[1])) //adding two consts
+		{
+			instr->function = getFunctions()[SET_ID];
+			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
+			std::swap(instr->args[0], instr->args[2]);
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //adding 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
@@ -96,7 +106,16 @@ namespace ADscript
 
 	void optimizeSUB(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //subtracting 0
+		if (isConst(instr->args[0]) && isConst(instr->args[1])) //subtracting two consts
+		{
+			instr->function = getFunctions()[SET_ID];
+			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) - getConstVal(instr->args[1]);
+			std::swap(instr->args[0], instr->args[2]);
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //subtracting 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
@@ -117,7 +136,16 @@ namespace ADscript
 
 	void optimizeMULT(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //multiplying 1
+		if (isConst(instr->args[0]) && isConst(instr->args[1])) //multiplying two consts
+		{
+			instr->function = getFunctions()[SET_ID];
+			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) * getConstVal(instr->args[1]);
+			std::swap(instr->args[0], instr->args[2]);
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //multiplying 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
@@ -138,7 +166,16 @@ namespace ADscript
 
 	void optimizeDIV(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //dividing 1
+		if (isConst(instr->args[0]) && isConst(instr->args[1])) //dividing two consts
+		{
+			instr->function = getFunctions()[SET_ID];
+			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
+			std::swap(instr->args[0], instr->args[2]);
+			delete instr->args[2];
+			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //dividing 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);

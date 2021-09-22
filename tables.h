@@ -43,6 +43,8 @@ namespace ADscript
 	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**));
 
 	void registerVariable(std::string id, char* var);
+
+	std::string getFunctionByPtr(void(*ipt)(program*, char**));
 }
 
 #endif

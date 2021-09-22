@@ -80,4 +80,27 @@ namespace ADscript
 	{
 		variableTable.insert({ id, var });
 	}
+
+
+	std::string getFunctionByPtr(void(*ipt)(program*, char**))
+	{
+		unsigned int fID = 0;
+		for (unsigned int i = 0; i < functions.size(); i++)
+		{
+			if (functions[i] == ipt)
+			{
+				fID = i;
+				break;
+			}
+		}
+
+		for (auto ftval : functionTable)
+		{
+			if (ftval.second.first == fID)
+			{
+				return ftval.first;
+			}
+		}
+		return "?";
+	}
 }

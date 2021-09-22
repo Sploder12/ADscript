@@ -3,6 +3,7 @@
 #include "tables.h"
 
 #include <iostream>
+#include <fstream>
 
 namespace ADscript
 {
@@ -157,6 +158,41 @@ namespace ADscript
 				std::cout << instr->args[j] << " ";
 			}
 			std::cout << "\n";
+		}
+	}
+
+	void program::decompile(const char* filename)
+	{
+		std::ofstream file(filename);
+
+		if (file.is_open())
+		{
+			for (unsigned int i = 0; i < instructionCnt; i++)
+			{
+				instruction* instr = instructions[i];
+				file << getFunctionByPtr(instr->function);
+				for (unsigned int j = 0; j < instr->argCnt; j++)
+				{
+					file << ' ';
+
+					if (instr->args[j][0] == 'c')
+					{
+						file << std::to_string(*(AD_DEFAULT_TYPE*)(instr->args[j] + 1));
+					}
+					else
+					{
+						file << (instr->args[j] + 1);
+					}
+
+					
+				}
+
+				if (i != instructionCnt - 1)
+				{
+					file << "\n";
+				}
+			}
+			file.close();
 		}
 	}
 

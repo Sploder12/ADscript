@@ -152,6 +152,7 @@
     <ClInclude Include="tables.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OptimizedOpt.ads" />
     <None Include="README.md" />
     <None Include="test.ads" />
   </ItemGroup>

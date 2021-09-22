@@ -72,6 +72,8 @@ namespace ADscript
 
 		void dumpInstructions();
 
+		void decompile(const char* filename);
+
 		char* getVar(std::string id);
 
 		void push(std::string id, char* val);
