@@ -35,6 +35,8 @@ namespace ADscript
 
 	std::vector<void(*)(program*, char**)>& getFunctions();
 
+	std::vector<void(*)(program*, char**)>& getSTDFunctions();
+
 	std::map<std::string, char*>& getVariableTable();
 
 	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**));

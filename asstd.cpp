@@ -16,6 +16,19 @@ namespace ADscript
 		return *(AD_DEFAULT_TYPE*)(str + 1);
 	}
 
+	bool isSTDfunc(void(*func)(program*, char**))
+	{
+		auto funcs = getSTDFunctions();
+		for (auto fnc : funcs)
+		{
+			if (func == fnc)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	AD_DEFAULT_TYPE* getArgPtr(program* host, char* arg)
 	{
 		if (isConst(arg))

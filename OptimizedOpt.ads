@@ -1,5 +1,3 @@
-VAR num $cVar
-JUMP 4
-SET num 100
-PRINT num
-MARK 4
+JUMP 2
+PRINT $cVar
+MARK 2

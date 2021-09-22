@@ -250,6 +250,7 @@ namespace ADscript
 		optimizationTable.insert(std::pair<void(*)(program*, char**), void(*)(instruction*)>(instr, func));
 	}
 
+	//peephole optimizer, good for getting things ready for the big boy optimizer
 	void optimize(instruction* instr)
 	{
 		try
@@ -267,7 +268,86 @@ namespace ADscript
 	//It is highly highly recommended that the peephole optimizations are performed prior to this.
 	void fullOptimize(std::vector<instruction*>* instructions)
 	{
-		//final pass, remove NONE
+		std::map<std::string, unsigned int> varAccessTable;
+		std::map<std::string, instruction*> initLocation;
+		for (auto instr : *instructions) //find if variables are actually constants
+		{
+			for (unsigned int i = 0; i < instr->argCnt; i++)
+			{
+				if (!isConst(instr->args[i]) && instr->args[i][1] != '$')
+				{
+					if (instr->function == MARK || instr->function == JUMP || instr->function == CJUMP)
+					{
+						continue;
+					}
+
+
+					if (varAccessTable.count(instr->args[i]) == 0)
+					{
+						varAccessTable.insert(std::pair <std::string, unsigned int>(instr->args[i], 0));
+					}
+
+					if (instr->function == VAR)
+					{
+						initLocation.insert(std::pair<std::string, instruction*>(instr->args[i], instr));
+						continue;
+					}
+					
+					if (
+						(instr->function == SET && i == 0) ||
+						(instr->function == ADD && i == 2) ||
+						(instr->function == SUB && i == 2) ||
+						(instr->function == MULT && i == 2) ||
+						(instr->function == DIV && i == 2) ||
+						(!isSTDfunc(instr->function)) //optimizer has no knowledge whether or not a custom function sets a value so we assume it does
+						)
+					{
+						varAccessTable.at(instr->args[i]) += 1;
+					}
+				}
+			}
+		}
+
+		for (auto instr : *instructions) //set all args that reference the const var to the const val
+		{
+			for (unsigned int i = 0; i < instr->argCnt; i++)
+			{
+				if (varAccessTable.count(instr->args[i]) == 1)
+				{
+					if (instr->function == VAR)
+					{
+						continue;
+					}
+
+					if (varAccessTable.at(instr->args[i]) <= 0)
+					{
+						unsigned int size = strlen(initLocation.at(instr->args[i])->args[1]) + 1;
+						char* tmp = new char[size];
+						strcpy_s(tmp, size, initLocation.at(instr->args[i])->args[1]);
+						std::swap(tmp, instr->args[i]);
+						delete[] tmp;
+
+						optimize(instr);
+					}
+				}
+			}
+		}
+
+		for (auto inits : initLocation) //remove VAR for constant value
+		{
+			if (varAccessTable.at(inits.first) <= 0)
+			{
+				inits.second->function = getFunctions()[NONE_ID];
+				delete inits.second->args[0];
+				delete inits.second->args[1];
+				inits.second->argCnt = 0;
+				optimize(inits.second);
+			}
+		}
+
+		varAccessTable.clear();
+		initLocation.clear();
+
 		std::vector<instruction*> tmp;
 		tmp.reserve(instructions->size());
 
@@ -286,8 +366,7 @@ namespace ADscript
 		tmp.clear();
 		tmp.reserve(instructions->size());
 
-
-		//@TODO big boy optimizations
+		//@TODO more big boy optimizations
 
 
 	}

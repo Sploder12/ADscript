@@ -47,6 +47,8 @@ namespace ADscript
 		NONE
 	};
 
+	std::vector<void(*)(program*, char**)> STDfuncs = functions;
+
 	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable()
 	{
 		return functionTable;
@@ -55,6 +57,11 @@ namespace ADscript
 	std::vector<void(*)(program*, char**)>& getFunctions()
 	{
 		return functions;
+	}
+
+	std::vector<void(*)(program*, char**)>& getSTDFunctions()
+	{
+		return STDfuncs;
 	}
 
 	std::map<std::string, char*> variableTable;

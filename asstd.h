@@ -10,6 +10,8 @@ namespace ADscript
 	bool isConst(char* str);
 	AD_DEFAULT_TYPE getConstVal(char* str);
 
+	bool isSTDfunc(void(*func)(program*, char**));
+
 	void VAR(program* host, char** args);
 	void POP(program* host, char** args);
 	void DELETE(program* host, char** args);
