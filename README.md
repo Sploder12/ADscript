@@ -19,6 +19,9 @@ Each of these instructions includes a function ptr and all the args for the func
 The compiler will only check if the argument count is the same as what is expected, type safety is not guarenteed.  
 All standard functions assume that everything is of type int.  
 
+A comment can be made by starting a line with ';'
+The compiler will ignore that line (; MUST BE THE FIRST CHARACTER ON HE LINE!!!! NO SPACES BEFORE!!!)
+
 ### Registering
 
 Function Registering must be done prior to compiling the program.  

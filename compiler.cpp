@@ -66,10 +66,17 @@ namespace ADscript
 			instr->function = getFunctions()[NONE_ID];
 			delete instr->args[0];
 			delete instr->args[1];
-			delete[] instr->args;
 			instr->argCnt = 0;
 			//good practice when changing instruction type to try and optimize further (even if the optimization might not exist)
 			optimize(instr); 
+		}
+		else if (isConst(instr->args[0])) //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			instr->argCnt = 0;
+			optimize(instr);
 		}
 	}
 
@@ -102,6 +109,15 @@ namespace ADscript
 			instr->argCnt = 2;
 			optimize(instr);
 		}
+		else if (isConst(instr->args[2])) //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			delete instr->args[2];
+			instr->argCnt = 0;
+			optimize(instr);
+		}
 	}
 
 	void optimizeSUB(instruction* instr)
@@ -130,6 +146,15 @@ namespace ADscript
 			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[2])) //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			delete instr->args[2];
+			instr->argCnt = 0;
 			optimize(instr);
 		}
 	}
@@ -162,6 +187,15 @@ namespace ADscript
 			instr->argCnt = 2;
 			optimize(instr);
 		}
+		else if (isConst(instr->args[2])) //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			delete instr->args[2];
+			instr->argCnt = 0;
+			optimize(instr);
+		}
 	}
 
 	void optimizeDIV(instruction* instr)
@@ -190,6 +224,15 @@ namespace ADscript
 			std::swap(instr->args[1], instr->args[2]);
 			delete instr->args[2];
 			instr->argCnt = 2;
+			optimize(instr);
+		}
+		else if (isConst(instr->args[2])) //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			delete instr->args[0];
+			delete instr->args[1];
+			delete instr->args[2];
+			instr->argCnt = 0;
 			optimize(instr);
 		}
 	}
@@ -293,6 +336,11 @@ namespace ADscript
 			std::string line;
 			while (std::getline(file, line))
 			{
+				if (line == "" || line[0] == ';')
+				{
+					continue;
+				}
+
 				std::vector<std::string> split;
 				std::string subline;
 				std::stringstream substrm(line);
