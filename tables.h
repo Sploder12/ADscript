@@ -7,43 +7,38 @@
 #include <string>
 #include <vector>
 
-#ifndef AD_DEFAULT_TYPE
-#define AD_DEFAULT_TYPE int
-#endif
-
 #define VAR_ID 0
-#define POP_ID 1
-#define DELETE_ID 2
-#define END_ID 3
-#define PRINT_ID 4
-#define SET_ID 5
-#define ADD_ID 6
-#define SUB_ID 7
-#define MULT_ID 8
-#define DIV_ID 9
-#define EQUAL_ID 10
-#define NEQUAL_ID 11
-#define JUMP_ID 12
-#define CJUMP_ID 13
-#define MARK_ID 14
-#define NONE_ID 15
+#define DELETE_ID 1
+#define END_ID 2
+#define PRINT_ID 3
+#define SET_ID 4
+#define ADD_ID 5
+#define SUB_ID 6
+#define MULT_ID 7
+#define DIV_ID 8
+#define EQUAL_ID 9
+#define NEQUAL_ID 10
+#define JUMP_ID 11
+#define CJUMP_ID 12
+#define MARK_ID 13
+#define NONE_ID 14
 
 namespace ADscript
 {
 	
 	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable();
 
-	std::vector<void(*)(program*, char**)>& getFunctions();
+	std::vector<void(*)(program*, arg*)>& getFunctions();
 
-	std::vector<void(*)(program*, char**)>& getSTDFunctions();
+	const std::vector<void(*)(program*, arg*)>& getSTDFunctions();
 
-	std::map<std::string, char*>& getVariableTable();
+	std::map<std::string, arg*>& getVariableTable();
 
-	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**));
+	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, arg*));
 
 	void registerVariable(std::string id, char* var);
 
-	std::string getFunctionByPtr(void(*ipt)(program*, char**));
+	std::string getFunctionByPtr(void(*ipt)(program*, arg*));
 }
 
 #endif

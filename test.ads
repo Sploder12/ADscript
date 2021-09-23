@@ -4,4 +4,5 @@ NONE
 JUMP art
 PRINT num
 SET 100 num
+DELETE num
 MARK art

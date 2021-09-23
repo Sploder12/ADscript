@@ -6,7 +6,7 @@
 
 namespace ADscript
 {
-	void registerOptimization(void(*instr)(program*, char**), void(*func)(instruction*));
+	void registerOptimization(void(*instr)(program*, arg*), void(*func)(instruction*));
 
 	program compile(const char* filename);
 }

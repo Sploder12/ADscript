@@ -1,20 +1,100 @@
 #include "asexe.h"
 
 #include "tables.h"
+#include "asstd.h"
 
 #include <iostream>
 #include <fstream>
 
 namespace ADscript
 {
+	arg::arg(char type, char* data) :
+		type(type), data(data) {}
 
-	node::node(std::string ID, char* data):
-		ID(ID), data(data) {}
+	arg::arg(char type, std::string data) :
+		type(type)
+	{
+		this->data = new char[data.size() + 1];
+		std::copy(data.begin(), data.end(), this->data);
+		this->data[data.size()] = '\0';
+	}
 
-	node::~node()
+	arg::arg(char type, AD_DEFAULT_TYPE& data) :
+		type(type)
+	{
+		this->data = new char[sizeof(AD_DEFAULT_TYPE)];
+		char* cval = (char*)new AD_DEFAULT_TYPE(data);
+		std::copy(cval, cval + sizeof(AD_DEFAULT_TYPE), this->data);
+		delete (AD_DEFAULT_TYPE*)cval;
+	}
+
+	/*
+	arg::arg(char type, int data) :
+		type(type)
+	{
+		this->data = new char[sizeof(int)];
+		char* cval = (char*)new int(data);
+		std::copy(cval, cval + sizeof(int), this->data);
+		delete (int*)cval;
+	}
+	*/
+
+	arg::arg(arg&& other) noexcept :
+		type(std::move(other.type)),
+		data(std::move(other.data))
+	{
+		other.data = nullptr;
+	}
+
+	arg::arg(const arg& other) :
+		type(other.type)
+	{
+		unsigned int size = strlen(other.data);
+		this->data = new char[size + 1];
+		std::copy(other.data, other.data + size, this->data);
+		data[size] = '\0';
+	}
+
+	void arg::operator=(const arg& other)
+	{
+		unsigned int size = strlen(other.data);
+		this->data = new char[size + 1];
+		std::copy(other.data, other.data + size, this->data);
+	}
+
+	void arg::operator=(arg&& other) noexcept
+	{
+		this->type = std::move(other.type);
+		this->data = std::move(other.data);
+		other.data = nullptr;
+	}
+
+	bool arg::operator==(const arg& other) const
+	{
+		return (compStr(this->data, other.data) && this->type == other.type);
+	}
+
+	bool arg::operator<(const arg& other) const
+	{
+		std::string tmp = this->type + std::string(this->data);
+		std::string tmp2 = other.type + std::string(other.data);
+		return tmp < tmp2;
+	}
+
+	bool arg::operator>(const arg& other) const
+	{
+		std::string tmp = this->type + std::string(this->data);
+		std::string tmp2 = other.type + std::string(other.data);
+		return tmp > tmp2;
+	}
+
+	arg::~arg()
 	{
 		delete[] data;
 	}
+
+	node::node(std::string ID, arg data):
+		ID(ID), data(data) {}
 
 	void linkedStack::push(node* elem)
 	{
@@ -81,18 +161,26 @@ namespace ADscript
 		delete cur;
 	}
 
-	instruction::instruction(void(*function)(program*, char**), unsigned int argCnt, char** args) :
+	instruction::instruction(void(*function)(program*, arg*), unsigned int argCnt, arg* args) :
 		function(function), argCnt(argCnt), args(args) {}
 
 	instruction::~instruction()
 	{
-		for (unsigned int i = 0; i < argCnt; i++)
-		{
-			delete[] args[i];
-		}
 		delete[] args;
 	}
 
+
+	void instruction::resize(unsigned int size)
+	{
+		arg* tmp = new arg[size];
+		for (unsigned int i = 0; i < std::min(size, argCnt); i++)
+		{
+			std::swap(tmp[i], this->args[i]);
+		}
+		delete[] args;
+		args = tmp;
+		argCnt = size;
+	}
 
 	void instruction::exe(program* host)
 	{
@@ -124,7 +212,7 @@ namespace ADscript
 		node* top = other.programMemory.top;
 		while (top)
 		{
-			node* newNode = new node(top->ID, new char(*top->data));
+			node* newNode = new node(top->ID, top->data);
 			programMemory.push(newNode);
 			top = top->next;
 		}
@@ -155,7 +243,7 @@ namespace ADscript
 			std::cout << "Instruction " << i << " Function:" << instr->function << " with ArgCount:" << instr->argCnt << " Args: ";
 			for (unsigned int j = 0; j < instr->argCnt; j++)
 			{
-				std::cout << instr->args[j] << " ";
+				std::cout << instr->args[j].type << instr->args[j].data << " ";
 			}
 			std::cout << "\n";
 		}
@@ -175,13 +263,13 @@ namespace ADscript
 				{
 					file << ' ';
 
-					if (instr->args[j][0] == 'c')
+					if (instr->args[j].type == 'c')
 					{
-						file << std::to_string(*(AD_DEFAULT_TYPE*)(instr->args[j] + 1));
+						file << std::to_string(*(AD_DEFAULT_TYPE*)(instr->args[j].data));
 					}
 					else
 					{
-						file << (instr->args[j] + 1);
+						file << (instr->args[j].data);
 					}
 
 					
@@ -203,14 +291,14 @@ namespace ADscript
 		{
 			if (cur->ID == id)
 			{
-				return cur->data;
+				return cur->data.data;
 			}
 			cur = cur->previous;
 		}
 		return nullptr;
 	}
 
-	void program::push(std::string id, char* val)
+	void program::push(std::string id, arg val)
 	{
 		node* newNode = new node(id, val);
 		programMemory.push(newNode);

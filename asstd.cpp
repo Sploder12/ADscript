@@ -4,19 +4,37 @@
 
 namespace ADscript
 {
-	//can be assumed that a value is a variable otherwise
-	inline bool isConst(char* str)
+	bool compStr(char* str1, char* str2)
 	{
-		return (str[0] == 'c');
+		char* chr = &str1[0];
+		char* ochr = &str2[0];
+		while (*chr != '\0')
+		{
+			if (*ochr == '\0')
+			{
+				return false;
+			}
+			else if (*chr == *ochr)
+			{
+				chr += 1;
+				ochr += 1;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		return (*ochr == '\0');
 	}
 
 	//getArgVal could be used instead but this is more direct
-	AD_DEFAULT_TYPE getConstVal(char* str)
+	AD_DEFAULT_TYPE getConstVal(arg& str)
 	{
-		return *(AD_DEFAULT_TYPE*)(str + 1);
+		return *(AD_DEFAULT_TYPE*)(str.data);
 	}
 
-	bool isSTDfunc(void(*func)(program*, char**))
+	bool isSTDfunc(void(*func)(program*, arg*))
 	{
 		auto funcs = getSTDFunctions();
 		for (auto fnc : funcs)
@@ -29,107 +47,101 @@ namespace ADscript
 		return false;
 	}
 
-	AD_DEFAULT_TYPE* getArgPtr(program* host, char* arg)
+	AD_DEFAULT_TYPE* getArgPtr(program* host, arg& arg)
 	{
-		if (isConst(arg))
+		if (arg.type == 'c')
 		{
-			return (AD_DEFAULT_TYPE*)(arg+1);
+			return (AD_DEFAULT_TYPE*)(arg.data);
 		}
 		else
 		{
-			if (arg[1] == '$')
+			if (arg.type == '$')
 			{
 				auto& vTable = getVariableTable();
 
-				return (AD_DEFAULT_TYPE*)vTable.at(arg + 2);
+				return (AD_DEFAULT_TYPE*)vTable.at(arg.data)->data;
 			}
 
-			return (AD_DEFAULT_TYPE*)host->getVar(arg);
+			return (AD_DEFAULT_TYPE*)host->getVar(arg.data);
 		}
 	}
 
-	int getArgVal(program* host, char* arg)
+	int getArgVal(program* host, arg& arg)
 	{
 		return *getArgPtr(host, arg);
 	}
 
 	//takes 2 args, a varID and initial value
 	//note that the varID has already been converted by the compiler to an index
-	void VAR(program* host, char** args)
+	void VAR(program* host, arg* args)
 	{
-		host->push(args[0], (char*)new AD_DEFAULT_TYPE(getArgVal(host, args[1])));
-	}
-
-	//takes no args, pops top value from stack
-	void POP(program* host, char** args)
-	{
-		host->pop();
+		host->push(args[0].data, args[0]);
 	}
 
 	//takes 1 arg, named value to delete
-	void DELETE(program* host, char** args)
+	void DELETE(program* host, arg* args)
 	{
-		host->programMemory.remove(args[0]);
+		host->programMemory.remove(args[0].data);
 	}
 
 	//takes no args, stops program
-	void END(program* host, char** args)
+	void END(program* host, arg* args)
 	{
 		host->curInstruction = host->instructionCnt;
 	}
 
 	//takes 1 arg, something to print
-	void PRINT(program* host, char** args)
+	void PRINT(program* host, arg* args)
 	{
 		std::cout << getArgVal(host, args[0]) << '\n';
 	}
 
 	//takes 2 args, value and place to store
-	void SET(program* host, char** args)
+	void SET(program* host, arg* args)
 	{
 		*getArgPtr(host, args[0]) = getArgVal(host, args[1]);
 	}
 
 	//takes 3 args, two vals to add and place to store
-	void ADD(program* host, char** args)
+	void ADD(program* host, arg* args)
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) + getArgVal(host, args[1]);
 	}
 
 	//takes 3 args, two vals to subtract and place to store
-	void SUB(program* host, char** args)
+	void SUB(program* host, arg* args)
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) - getArgVal(host, args[1]);
 	}
 
 	//takes 3 args, two vals to multiply and place to store
-	void MULT(program* host, char** args)
+	void MULT(program* host, arg* args)
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) * getArgVal(host, args[1]);
 	}
 
 	//takes 3 args, two vals to divide and place to store
-	void DIV(program* host, char** args)
+	void DIV(program* host, arg* args)
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) / getArgVal(host, args[1]);
 	}
 
 	//takes 2 args, two vals to compare
 	//result can be found in host.comparisonRet
-	void EQUAL(program* host, char** args)
+	void EQUAL(program* host, arg* args)
 	{
 		host->comparisonRet = getArgVal(host, args[0]) == getArgVal(host, args[1]);
 	}
 
 	//takes 2 args, two vals to compare
 	//result can be found in host.comparisonRet
-	void NEQUAL(program* host, char** args)
+	void NEQUAL(program* host, arg* args)
 	{
 		host->comparisonRet = getArgVal(host, args[0]) != getArgVal(host, args[1]);
 	}
 
 	//takes 1 args, an instruction to jump to
-	void JUMP(program* host, char** args)
+	void JUMP(program* host, arg* args)
 	{
 		AD_DEFAULT_TYPE val = getArgVal(host, args[0]);
 		if (val < host->instructionCnt)
@@ -140,7 +152,7 @@ namespace ADscript
 
 	//takes 1 args, an instruction to jump to
 	//uses the bool inside comparisonRet for conditional
-	void CJUMP(program* host, char** args)
+	void CJUMP(program* host, arg* args)
 	{
 		if (host->comparisonRet)
 		{
@@ -150,8 +162,8 @@ namespace ADscript
 
 	//takes 1 arg, a name to mark as a jump location
 	//locations are set after optimizations
-	void MARK(program* host, char** args) {}
+	void MARK(program* host, arg* args) {}
 	
 	//takes 0 args, does nothing. Mainly exists for optimizations
-	void NONE(program* host, char** args) {}
+	void NONE(program* host, arg* args) {}
 }

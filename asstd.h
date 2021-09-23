@@ -7,33 +7,33 @@
 
 namespace ADscript
 {
-	bool isConst(char* str);
-	AD_DEFAULT_TYPE getConstVal(char* str);
+	bool compStr(char* str1, char* str2);
 
-	bool isSTDfunc(void(*func)(program*, char**));
+	AD_DEFAULT_TYPE getConstVal(arg& str);
 
-	void VAR(program* host, char** args);
-	void POP(program* host, char** args);
-	void DELETE(program* host, char** args);
-	void END(program* host, char** args);
+	bool isSTDfunc(void(*func)(program*, arg*));
 
-	void PRINT(program* host, char** args);
+	void VAR(program* host, arg* args);
+	void DELETE(program* host, arg* args);
+	void END(program* host, arg* args);
 
-	void SET(program* host, char** args);
-	void ADD(program* host, char** args);
-	void SUB(program* host, char** args);
-	void MULT(program* host, char** args);
-	void DIV(program* host, char** args);
+	void PRINT(program* host, arg* args);
 
-	void EQUAL(program* host, char** args);
-	void NEQUAL(program* host, char** args);
+	void SET(program* host, arg* args);
+	void ADD(program* host, arg* args);
+	void SUB(program* host, arg* args);
+	void MULT(program* host, arg* args);
+	void DIV(program* host, arg* args);
 
-	void JUMP(program* host, char** args);
-	void CJUMP(program* host, char** args);
+	void EQUAL(program* host, arg* args);
+	void NEQUAL(program* host, arg* args);
 
-	void MARK(program* host, char** args);
+	void JUMP(program* host, arg* args);
+	void CJUMP(program* host, arg* args);
+
+	void MARK(program* host, arg* args);
 	
-	void NONE(program* host, char** args);
+	void NONE(program* host, arg* args);
 }
 
 #endif

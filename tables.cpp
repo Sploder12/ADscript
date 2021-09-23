@@ -10,7 +10,6 @@ namespace ADscript
 	std::map<std::string, std::pair<unsigned int, unsigned int>> functionTable =
 	{
 		{"VAR", {VAR_ID, 2}},
-		{"POP", {POP_ID, 0}},
 		{"DELETE", {DELETE_ID, 1}},
 		{"END", {END_ID, 0}},
 		{"PRINT", {PRINT_ID, 1}},
@@ -27,10 +26,9 @@ namespace ADscript
 		{"NONE", {NONE_ID, 0}}
 	};
 
-	std::vector<void(*)(program*, char**)> functions =
+	std::vector<void(*)(program*, arg*)> functions =
 	{
 		VAR,
-		POP,
 		DELETE,
 		END,
 		PRINT,
@@ -47,31 +45,31 @@ namespace ADscript
 		NONE
 	};
 
-	std::vector<void(*)(program*, char**)> STDfuncs = functions;
+	const std::vector<void(*)(program*, arg*)> STDfuncs = functions;
 
 	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable()
 	{
 		return functionTable;
 	}
 
-	std::vector<void(*)(program*, char**)>& getFunctions()
+	std::vector<void(*)(program*, arg*)>& getFunctions()
 	{
 		return functions;
 	}
 
-	std::vector<void(*)(program*, char**)>& getSTDFunctions()
+	const std::vector<void(*)(program*, arg*)>& getSTDFunctions()
 	{
 		return STDfuncs;
 	}
 
-	std::map<std::string, char*> variableTable;
+	std::map<std::string, arg*> variableTable;
 
-	std::map<std::string, char*>& getVariableTable()
+	std::map<std::string, arg*>& getVariableTable()
 	{
 		return variableTable;
 	}
 
-	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, char**))
+	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, arg*))
 	{
 		functionTable.insert({id, {unsigned int(functions.size()), argCount}});
 		functions.push_back(func);
@@ -79,11 +77,11 @@ namespace ADscript
 
 	void registerVariable(std::string id, char* var)
 	{
-		variableTable.insert({ id, var });
+		variableTable.emplace(id, new arg('$', var));
 	}
 
 
-	std::string getFunctionByPtr(void(*ipt)(program*, char**))
+	std::string getFunctionByPtr(void(*ipt)(program*, arg*))
 	{
 		unsigned int fID = 0;
 		for (unsigned int i = 0; i < functions.size(); i++)

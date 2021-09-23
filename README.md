@@ -65,10 +65,6 @@ Creates a new named variable on the stack
 Takes 2 arguments,  
 variable id, initial value  
 
-**POP**  
-Removes a named variable from the top of the stack  
-Takes 0 arguments  
-
 **DELETE**
 Removes a named variable from the stack
 Takes 1 argument,

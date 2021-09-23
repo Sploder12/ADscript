@@ -3,19 +3,51 @@
 
 #include <string>
 
+#ifndef AD_DEFAULT_TYPE
+#define AD_DEFAULT_TYPE int
+#endif
+
 namespace ADscript
 {
+	struct arg
+	{
+		char type;
+		char* data;
+
+		arg(char type, char* data);
+
+		arg(char type, std::string data);
+
+		arg(char type, AD_DEFAULT_TYPE& data);
+
+		//arg(char type, int data);
+
+		arg() = default;
+
+		arg(arg&& other) noexcept; //move
+
+		arg(const arg& other); //copy
+
+		void operator=(const arg& other);
+		void operator=(arg&& other) noexcept;
+
+		bool operator==(const arg& other) const;
+		bool operator<(const arg& other) const;
+		bool operator>(const arg& other) const;
+
+		~arg();
+	};
+
 	struct node
 	{
-		node(std::string ID, char* data);
+		node(std::string ID, arg data);
 
 		node* previous = nullptr;
 		node* next = nullptr;
 
 		std::string ID;
-		char* data;
+		arg data;
 
-		~node();
 	};
 
 	struct linkedStack
@@ -36,14 +68,16 @@ namespace ADscript
 	{
 		instruction() = default;
 
-		instruction(void(*function)(program*, char**), unsigned int argCnt, char** args);
+		instruction(void(*function)(program*, arg*), unsigned int argCnt, arg* args);
 
-		void(*function)(program*, char**);
+		void(*function)(program*, arg*);
 		unsigned int argCnt;
 		
 		//args stored as array of byte array
 		//type safety is only checked loosely by compiler
-		char** args; 
+		arg* args; 
+
+		void resize(unsigned int size);
 
 		void exe(program* host);
 
@@ -76,7 +110,7 @@ namespace ADscript
 
 		char* getVar(std::string id);
 
-		void push(std::string id, char* val);
+		void push(std::string id, arg val);
 
 		void pop();
 

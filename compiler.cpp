@@ -31,51 +31,34 @@ namespace ADscript
 		}	
 	}
 
-	bool compStr(char* str1, char* str2)
-	{
-		char* chr = &str1[0];
-		char* ochr = &str2[0];
-		while (*chr != '\0')
-		{
-			if (*ochr == '\0')
-			{
-				return false;
-			}
-			else if (*chr == *ochr)
-			{
-				chr += 1;
-				ochr += 1;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		return (*ochr == '\0');
-	}
-
 	//forward declaration so that optimizations can call optimize again
 	void optimize(instruction* instr);
+
+	void optimizeDELETE(instruction* instr)
+	{
+		//deleting const or registered var
+		if (instr->args[0].type == 'c' || instr->args[0].type == '$')
+		{
+			instr->function = getFunctions()[NONE_ID];
+			instr->resize(0);
+			optimize(instr);
+		}
+	}
 
 	void optimizeSET(instruction* instr)
 	{
 		//Setting a variable equal to itself
-		if (compStr(instr->args[0], instr->args[1]))
+		if (instr->args[0] == instr->args[1])
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			instr->argCnt = 0;
+			instr->resize(0);
 			//good practice when changing instruction type to try and optimize further (even if the optimization might not exist)
 			optimize(instr); 
 		}
-		else if (isConst(instr->args[0])) //setting const to value
+		else if (instr->args[0].type == 'c') //setting const to value
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			instr->argCnt = 0;
+			instr->resize(0);
 			optimize(instr);
 		}
 	}
@@ -83,161 +66,138 @@ namespace ADscript
 	void optimizeADD(instruction* instr)
 	{
 
-		if (isConst(instr->args[0]) && isConst(instr->args[1])) //adding two consts
+		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //adding two consts
 		{
 			instr->function = getFunctions()[SET_ID];
-			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //adding 0
+		else if (instr->args[0].type == 'c' && getConstVal(instr->args[0]) == 0) //adding 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 0) //adding 0
+		else if (instr->args[1].type == 'c' && getConstVal(instr->args[1]) == 0) //adding 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[1]);
 			std::swap(instr->args[1], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[2])) //setting const to value
+		else if (instr->args[2].type == 'c') //setting const to value
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			delete instr->args[2];
-			instr->argCnt = 0;
+			instr->resize(0);
 			optimize(instr);
 		}
 	}
 
 	void optimizeSUB(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && isConst(instr->args[1])) //subtracting two consts
+		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //subtracting two consts
 		{
 			instr->function = getFunctions()[SET_ID];
-			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) - getConstVal(instr->args[1]);
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) - getConstVal(instr->args[1]);
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 0) //subtracting 0
+		else if (instr->args[0].type == 'c' && getConstVal(instr->args[0]) == 0) //subtracting 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 0) //subtracting 0
+		else if (instr->args[1].type == 'c' && getConstVal(instr->args[1]) == 0) //subtracting 0
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[1]);
 			std::swap(instr->args[1], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[2])) //setting const to value
+		else if (instr->args[2].type == 'c') //setting const to value
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			delete instr->args[2];
-			instr->argCnt = 0;
+			instr->resize(0);
 			optimize(instr);
 		}
 	}
 
 	void optimizeMULT(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && isConst(instr->args[1])) //multiplying two consts
+		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //multiplying two consts
 		{
 			instr->function = getFunctions()[SET_ID];
-			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) * getConstVal(instr->args[1]);
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) * getConstVal(instr->args[1]);
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //multiplying 1
+		else if (instr->args[0].type == 'c' && getConstVal(instr->args[0]) == 1) //multiplying 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 1) //multiplying 1
+		else if (instr->args[1].type == 'c' && getConstVal(instr->args[1]) == 1) //multiplying 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[1]);
 			std::swap(instr->args[1], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[2])) //setting const to value
+		else if (instr->args[2].type == 'c') //setting const to value
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			delete instr->args[2];
-			instr->argCnt = 0;
+			instr->resize(0);
 			optimize(instr);
 		}
 	}
 
 	void optimizeDIV(instruction* instr)
 	{
-		if (isConst(instr->args[0]) && isConst(instr->args[1])) //dividing two consts
+		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //dividing two consts
 		{
 			instr->function = getFunctions()[SET_ID];
-			*(AD_DEFAULT_TYPE*)(instr->args[1] + 1) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[0]) && getConstVal(instr->args[0]) == 1) //dividing 1
+		else if (instr->args[0].type == 'c' && getConstVal(instr->args[0]) == 1) //dividing 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[1]) && getConstVal(instr->args[1]) == 1) //dividing 1
+		else if (instr->args[1].type == 'c' && getConstVal(instr->args[1]) == 1) //dividing 1
 		{
 			instr->function = getFunctions()[SET_ID];
 			std::swap(instr->args[0], instr->args[1]);
 			std::swap(instr->args[1], instr->args[2]);
-			delete instr->args[2];
-			instr->argCnt = 2;
+			instr->resize(2);
 			optimize(instr);
 		}
-		else if (isConst(instr->args[2])) //setting const to value
+		else if (instr->args[2].type == 'c') //setting const to value
 		{
 			instr->function = getFunctions()[NONE_ID];
-			delete instr->args[0];
-			delete instr->args[1];
-			delete instr->args[2];
-			instr->argCnt = 0;
+			instr->resize(0);
 			optimize(instr);
 		}
 	}
 
-	std::map<void(*)(program*, char**), void(*)(instruction*)> optimizationTable = {
+	std::map<void(*)(program*, arg*), void(*)(instruction*)> optimizationTable = {
+		{DELETE, optimizeDELETE},
 		{SET, optimizeSET},
 		{ADD, optimizeADD},
 		{SUB, optimizeSUB},
@@ -245,9 +205,9 @@ namespace ADscript
 		{DIV, optimizeDIV},
 	};
 
-	void registerOptimization(void(*instr)(program*, char**), void(*func)(instruction*))
+	void registerOptimization(void(*instr)(program*, arg*), void(*func)(instruction*))
 	{
-		optimizationTable.insert(std::pair<void(*)(program*, char**), void(*)(instruction*)>(instr, func));
+		optimizationTable.insert(std::pair<void(*)(program*, arg*), void(*)(instruction*)>(instr, func));
 	}
 
 	//peephole optimizer, good for getting things ready for the big boy optimizer
@@ -268,13 +228,13 @@ namespace ADscript
 	//It is highly highly recommended that the peephole optimizations are performed prior to this.
 	void fullOptimize(std::vector<instruction*>* instructions)
 	{
-		std::map<std::string, unsigned int> varAccessTable;
-		std::map<std::string, instruction*> initLocation;
+		std::map<arg, unsigned int> varAccessTable;
+		std::map<arg, instruction*> initLocation;
 		for (auto instr : *instructions) //find if variables are actually constants
 		{
 			for (unsigned int i = 0; i < instr->argCnt; i++)
 			{
-				if (!isConst(instr->args[i]) && instr->args[i][1] != '$')
+				if (instr->args[i].type == 'v')
 				{
 					if (instr->function == MARK || instr->function == JUMP || instr->function == CJUMP)
 					{
@@ -284,12 +244,12 @@ namespace ADscript
 
 					if (varAccessTable.count(instr->args[i]) == 0)
 					{
-						varAccessTable.insert(std::pair <std::string, unsigned int>(instr->args[i], 0));
+						varAccessTable.insert(std::pair<arg, unsigned int>(instr->args[i], 0));
 					}
 
 					if (instr->function == VAR)
 					{
-						initLocation.insert(std::pair<std::string, instruction*>(instr->args[i], instr));
+						initLocation.insert(std::pair<arg, instruction*>(instr->args[i], instr));
 						continue;
 					}
 					
@@ -321,12 +281,17 @@ namespace ADscript
 
 					if (varAccessTable.at(instr->args[i]) <= 0)
 					{
-						unsigned int size = strlen(initLocation.at(instr->args[i])->args[1]) + 1;
+						auto initLoc = initLocation.at(instr->args[i])->args[1].data;
+						unsigned int size = strlen(initLoc) + 1;
 						char* tmp = new char[size];
-						strcpy_s(tmp, size, initLocation.at(instr->args[i])->args[1]);
-						std::swap(tmp, instr->args[i]);
+						strcpy_s(tmp, size, initLoc);
+						std::swap(tmp, instr->args[i].data);
 						delete[] tmp;
-
+						
+						if (instr->function == DELETE)
+						{
+							instr->args[i].type = 'c';
+						}
 						optimize(instr);
 					}
 				}
@@ -338,9 +303,7 @@ namespace ADscript
 			if (varAccessTable.at(inits.first) <= 0)
 			{
 				inits.second->function = getFunctions()[NONE_ID];
-				delete inits.second->args[0];
-				delete inits.second->args[1];
-				inits.second->argCnt = 0;
+				inits.second->resize(0);
 				optimize(inits.second);
 			}
 		}
@@ -374,18 +337,15 @@ namespace ADscript
 	//converts the marker into a line number
 	void setMarkerLocations(unsigned int instructionCnt, instruction** instructions)
 	{
-		std::map<std::string, unsigned int> markers;
+		std::map<arg, unsigned int> markers;
 
 		for (unsigned int i = 0; i < instructionCnt; i++)
 		{
 			if (instructions[i]->function == MARK)
 			{
-				markers.insert(std::pair<std::string, unsigned int>(instructions[i]->args[0], i));
-				char* tmp = new char[sizeof(AD_DEFAULT_TYPE) + 1];
-				*(int*)(tmp + 1) = (int)i;
-				tmp[0] = 'c';
+				markers.insert(std::pair<arg, unsigned int>(instructions[i]->args[0], i));
+				arg tmp = arg('c', (AD_DEFAULT_TYPE&)i);
 				std::swap(tmp, instructions[i]->args[0]);
-				delete[] tmp;
 			}
 		}
 
@@ -393,11 +353,8 @@ namespace ADscript
 		{
 			if (instructions[i]->function == JUMP)
 			{
-				char* tmp = new char[sizeof(AD_DEFAULT_TYPE) + 1];
-				*(int*)(tmp+1) = (int)markers.at(instructions[i]->args[0]);
-				tmp[0] = 'c';
+				arg tmp = arg('c', (AD_DEFAULT_TYPE&)markers.at(instructions[i]->args[0]));
 				std::swap(tmp, instructions[i]->args[0]);
-				delete[] tmp;
 			}
 		}
 	}
@@ -438,27 +395,18 @@ namespace ADscript
 						throw "Compiler Error: Invalid Argument Count, Excpected: " + std::to_string(idncnt.second) + " Found:" + std::to_string(split.size() - 1) + '\n';
 					}
 
-					char** args = new char* [split.size() - 1];
+					arg* args = new arg[split.size() - 1];
 
 					for (unsigned int i = 1; i < split.size(); i++)
 					{
 						if (isNumeric(split[i]))
 						{
-							AD_DEFAULT_TYPE val = std::stol(split[i]);
-							char* mval = new char[sizeof(AD_DEFAULT_TYPE) + 1];
-							char* cval = (char*)new AD_DEFAULT_TYPE(val);
-							std::copy(cval, cval+sizeof(AD_DEFAULT_TYPE), mval + 1);
-							delete cval;
-							mval[0] = 'c'; //c for const!
-							args[i - 1] = mval;
+							int val = std::stol(split[i]);
+							args[i - 1] = arg('c', val);
 						}
 						else
 						{
-							char* writable = new char[split[i].size() + 2];
-							std::copy(split[i].begin(), split[i].end(), writable + 1);
-							writable[split[i].size()+1] = '\0';
-							writable[0] = 'v'; //v for var!
-							args[i - 1] = writable;
+							args[i - 1] = arg('v', split[i]);
 						}
 					}
 
