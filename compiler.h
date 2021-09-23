@@ -10,5 +10,4 @@ namespace ADscript
 
 	program compile(const char* filename);
 }
-
 #endif

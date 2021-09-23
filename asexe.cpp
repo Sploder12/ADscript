@@ -8,10 +8,10 @@
 
 namespace ADscript
 {
-	arg::arg(char type, char* data) :
-		type(type), data(data) {}
+	arg::arg(const char type, char* data) noexcept:
+		type(type), data(data)  {}
 
-	arg::arg(char type, std::string data) :
+	arg::arg(const char type, const std::string data) :
 		type(type)
 	{
 		this->data = new char[data.size() + 1];
@@ -19,7 +19,7 @@ namespace ADscript
 		this->data[data.size()] = '\0';
 	}
 
-	arg::arg(char type, AD_DEFAULT_TYPE& data) :
+	arg::arg(const char type, AD_DEFAULT_TYPE& data) :
 		type(type)
 	{
 		this->data = new char[sizeof(AD_DEFAULT_TYPE)];
@@ -49,7 +49,7 @@ namespace ADscript
 	arg::arg(const arg& other) :
 		type(other.type)
 	{
-		unsigned int size = strlen(other.data);
+		const size_t size = strlen(other.data);
 		this->data = new char[size + 1];
 		std::copy(other.data, other.data + size, this->data);
 		data[size] = '\0';
@@ -57,7 +57,7 @@ namespace ADscript
 
 	void arg::operator=(const arg& other)
 	{
-		unsigned int size = strlen(other.data);
+		const size_t size = strlen(other.data);
 		this->data = new char[size + 1];
 		std::copy(other.data, other.data + size, this->data);
 	}
@@ -93,7 +93,7 @@ namespace ADscript
 		delete[] data;
 	}
 
-	node::node(std::string ID, arg data):
+	node::node(const std::string ID, const arg data) noexcept:
 		ID(ID), data(data) {}
 
 	void linkedStack::push(node* elem)
@@ -161,7 +161,7 @@ namespace ADscript
 		delete cur;
 	}
 
-	instruction::instruction(void(*function)(program*, arg*), unsigned int argCnt, arg* args) :
+	instruction::instruction(void(*function)(program*, arg*), const unsigned int argCnt, arg* args) noexcept:
 		function(function), argCnt(argCnt), args(args) {}
 
 	instruction::~instruction()
@@ -169,8 +169,7 @@ namespace ADscript
 		delete[] args;
 	}
 
-
-	void instruction::resize(unsigned int size)
+	void instruction::resize(const unsigned int size)
 	{
 		arg* tmp = new arg[size];
 		for (unsigned int i = 0; i < std::min(size, argCnt); i++)
@@ -222,7 +221,6 @@ namespace ADscript
 	{
 		while (curInstruction < instructionCnt)
 		{
-			
 			instructions[curInstruction]->exe(this);
 			curInstruction++;
 		}
@@ -239,7 +237,7 @@ namespace ADscript
 	{
 		for (unsigned int i = 0; i < instructionCnt; i++)
 		{
-			instruction* instr = instructions[i];
+			const instruction* instr = instructions[i];
 			std::cout << "Instruction " << i << " Function:" << instr->function << " with ArgCount:" << instr->argCnt << " Args: ";
 			for (unsigned int j = 0; j < instr->argCnt; j++)
 			{
@@ -257,7 +255,7 @@ namespace ADscript
 		{
 			for (unsigned int i = 0; i < instructionCnt; i++)
 			{
-				instruction* instr = instructions[i];
+				const instruction* instr = instructions[i];
 				file << getFunctionByPtr(instr->function);
 				for (unsigned int j = 0; j < instr->argCnt; j++)
 				{
@@ -284,7 +282,7 @@ namespace ADscript
 		}
 	}
 
-	char* program::getVar(std::string id)
+	char* program::getVar(const std::string id)
 	{
 		node* cur = programMemory.bottom;
 		while (cur)
@@ -298,7 +296,7 @@ namespace ADscript
 		return nullptr;
 	}
 
-	void program::push(std::string id, arg val)
+	void program::push(const std::string id, const arg val)
 	{
 		node* newNode = new node(id, val);
 		programMemory.push(newNode);

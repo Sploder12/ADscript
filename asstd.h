@@ -7,9 +7,9 @@
 
 namespace ADscript
 {
-	bool compStr(char* str1, char* str2);
+	bool compStr(const char* str1, const char* str2);
 
-	AD_DEFAULT_TYPE getConstVal(arg& str);
+	AD_DEFAULT_TYPE getConstVal(const arg& str);
 
 	bool isSTDfunc(void(*func)(program*, arg*));
 

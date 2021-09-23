@@ -14,11 +14,11 @@ namespace ADscript
 		char type;
 		char* data;
 
-		arg(char type, char* data);
+		arg(const char type, char* data) noexcept;
 
-		arg(char type, std::string data);
+		arg(const char type, const std::string data);
 
-		arg(char type, AD_DEFAULT_TYPE& data);
+		arg(const char type, AD_DEFAULT_TYPE& data);
 
 		//arg(char type, int data);
 
@@ -40,7 +40,7 @@ namespace ADscript
 
 	struct node
 	{
-		node(std::string ID, arg data);
+		node(const std::string ID, const arg data) noexcept;
 
 		node* previous = nullptr;
 		node* next = nullptr;
@@ -68,7 +68,7 @@ namespace ADscript
 	{
 		instruction() = default;
 
-		instruction(void(*function)(program*, arg*), unsigned int argCnt, arg* args);
+		instruction(void(*function)(program*, arg*), const unsigned int argCnt, arg* args) noexcept;
 
 		void(*function)(program*, arg*);
 		unsigned int argCnt;
@@ -77,7 +77,7 @@ namespace ADscript
 		//type safety is only checked loosely by compiler
 		arg* args; 
 
-		void resize(unsigned int size);
+		void resize(const unsigned int size);
 
 		void exe(program* host);
 
@@ -108,9 +108,9 @@ namespace ADscript
 
 		void decompile(const char* filename);
 
-		char* getVar(std::string id);
+		char* getVar(const std::string id);
 
-		void push(std::string id, arg val);
+		void push(const std::string id, const arg val);
 
 		void pop();
 

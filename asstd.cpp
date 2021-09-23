@@ -4,10 +4,10 @@
 
 namespace ADscript
 {
-	bool compStr(char* str1, char* str2)
+	bool compStr(const char* str1, const char* str2)
 	{
-		char* chr = &str1[0];
-		char* ochr = &str2[0];
+		const char* chr = &str1[0];
+		const char* ochr = &str2[0];
 		while (*chr != '\0')
 		{
 			if (*ochr == '\0')
@@ -29,7 +29,7 @@ namespace ADscript
 	}
 
 	//getArgVal could be used instead but this is more direct
-	AD_DEFAULT_TYPE getConstVal(arg& str)
+	AD_DEFAULT_TYPE getConstVal(const arg& str)
 	{
 		return *(AD_DEFAULT_TYPE*)(str.data);
 	}

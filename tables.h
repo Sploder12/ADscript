@@ -25,20 +25,18 @@
 
 namespace ADscript
 {
-	
-	std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable();
+	const std::map<std::string, std::pair<unsigned int, unsigned int>>& getFunctionTable();
 
-	std::vector<void(*)(program*, arg*)>& getFunctions();
+	const std::vector<void(*)(program*, arg*)>& getFunctions();
 
 	const std::vector<void(*)(program*, arg*)>& getSTDFunctions();
 
-	std::map<std::string, arg*>& getVariableTable();
+	const std::map<std::string, arg*>& getVariableTable();
 
-	void registerFunction(std::string id, unsigned int argCount, void(*func)(program*, arg*));
+	void registerFunction(const std::string id, const unsigned int argCount, void(*func)(program*, arg*));
 
-	void registerVariable(std::string id, char* var);
+	void registerVariable(const std::string id, char* var);
 
 	std::string getFunctionByPtr(void(*ipt)(program*, arg*));
 }
-
 #endif

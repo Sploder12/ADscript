@@ -10,9 +10,8 @@
 
 namespace ADscript
 {
-	bool isNumeric(std::string str)
+	inline bool isNumeric(char chr) 
 	{
-		char chr = str[0];
 		switch (chr)
 		{
 		case '0':
@@ -281,8 +280,8 @@ namespace ADscript
 
 					if (varAccessTable.at(instr->args[i]) <= 0)
 					{
-						auto initLoc = initLocation.at(instr->args[i])->args[1].data;
-						unsigned int size = strlen(initLoc) + 1;
+						const auto initLoc = initLocation.at(instr->args[i])->args[1].data;
+						const size_t size = strlen(initLoc) + 1;
 						char* tmp = new char[size];
 						strcpy_s(tmp, size, initLoc);
 						std::swap(tmp, instr->args[i].data);
@@ -335,7 +334,7 @@ namespace ADscript
 	}
 
 	//converts the marker into a line number
-	void setMarkerLocations(unsigned int instructionCnt, instruction** instructions)
+	void setMarkerLocations(const unsigned int instructionCnt, instruction** instructions)
 	{
 		std::map<arg, unsigned int> markers;
 
@@ -361,7 +360,7 @@ namespace ADscript
 
 	program compile(const char* filename)
 	{
-		auto& fTable = getFunctionTable();
+		const auto& fTable = getFunctionTable();
 
 		std::vector<instruction*> instructions;
 
@@ -387,8 +386,8 @@ namespace ADscript
 				
 				try
 				{
-					std::pair<unsigned int, unsigned int> idncnt = fTable.at(split[0]);
-					unsigned int iid = idncnt.first;
+					const std::pair<unsigned int, unsigned int> idncnt = fTable.at(split[0]);
+					const unsigned int iid = idncnt.first;
 
 					if (split.size() - 1 != idncnt.second)
 					{
@@ -399,7 +398,7 @@ namespace ADscript
 
 					for (unsigned int i = 1; i < split.size(); i++)
 					{
-						if (isNumeric(split[i]))
+						if (isNumeric(split[i][0]))
 						{
 							int val = std::stol(split[i]);
 							args[i - 1] = arg('c', val);

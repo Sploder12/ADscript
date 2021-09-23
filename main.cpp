@@ -25,7 +25,7 @@ int main()
 
 	prgm.decompile("OptimizedOpt.ads");
 
-	for (unsigned int i = 0; i < 1000000; i++)
+	for (unsigned int i = 0; i < 10000000; i++)
 	{
 		
 		prgm.run();
