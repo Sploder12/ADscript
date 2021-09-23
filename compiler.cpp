@@ -280,11 +280,12 @@ namespace ADscript
 
 					if (varAccessTable.at(instr->args[i]) <= 0)
 					{
-						const auto initLoc = initLocation.at(instr->args[i])->args[1].data;
-						const size_t size = strlen(initLoc) + 1;
+						const auto initLoc = initLocation.at(instr->args[i])->args[1];
+						const size_t size = strlen(initLoc.data) + 1;
 						char* tmp = new char[size];
-						strcpy_s(tmp, size, initLoc);
+						strcpy_s(tmp, size, initLoc.data);
 						std::swap(tmp, instr->args[i].data);
+						instr->args[i].type = initLoc.type;
 						delete[] tmp;
 						
 						if (instr->function == DELETE)
@@ -405,7 +406,15 @@ namespace ADscript
 						}
 						else
 						{
-							args[i - 1] = arg('v', split[i]);
+							if (split[i][0] == '$')
+							{
+								args[i - 1] = arg('$', split[i].substr(1, split[i].size()-1));
+							}
+							else
+							{
+								args[i - 1] = arg('v', split[i]);
+							}
+							
 						}
 					}
 

@@ -1,3 +1,4 @@
-JUMP 2
 PRINT $cVar
-MARK 2
+JUMP 3
+PRINT $cVar
+MARK 3

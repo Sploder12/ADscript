@@ -265,6 +265,10 @@ namespace ADscript
 					{
 						file << std::to_string(*(AD_DEFAULT_TYPE*)(instr->args[j].data));
 					}
+					else if (instr->args[j].type == '$')
+					{
+						file << '$' << (instr->args[j].data);
+					}
 					else
 					{
 						file << (instr->args[j].data);

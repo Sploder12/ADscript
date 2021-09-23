@@ -1,5 +1,6 @@
 VAR num $cVar
 NONE
+PRINT num
 ;this is a comment
 JUMP art
 PRINT num
