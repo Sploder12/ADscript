@@ -93,12 +93,12 @@ namespace ADscript
 		delete[] data;
 	}
 
-	node::node(const std::string ID, const arg data) noexcept:
-		ID(ID), data(data) {}
+	node::node(const arg& data) noexcept:
+		data(data) {}
 
 	void linkedStack::push(node* elem)
 	{
-		if (bottom != nullptr)
+		if (bottom)
 		{
 			bottom->next = elem;
 			elem->previous = bottom;
@@ -129,14 +129,14 @@ namespace ADscript
 		delete removed;
 	}
 
-	void linkedStack::remove(const char* id)
+	void linkedStack::remove(arg var)
 	{
 		node* cur = bottom;
 		while (cur)
 		{
-			if (cur->ID == id)
+			if (cur->data == var)
 			{
-				if (cur->previous != nullptr)
+				if (cur->previous)
 				{
 					cur->previous->next = cur->next;
 				}
@@ -145,7 +145,7 @@ namespace ADscript
 					top = nullptr;
 				}
 
-				if (cur->next != nullptr)
+				if (cur->next)
 				{
 					cur->next->previous = cur->previous;
 				}
@@ -211,7 +211,7 @@ namespace ADscript
 		node* top = other.programMemory.top;
 		while (top)
 		{
-			node* newNode = new node(top->ID, top->data);
+			node* newNode = new node(top->data);
 			programMemory.push(newNode);
 			top = top->next;
 		}
@@ -261,20 +261,16 @@ namespace ADscript
 				{
 					file << ' ';
 
-					if (instr->args[j].type == 'c')
+					switch (instr->args[j].type)
 					{
+					case 'c':
 						file << std::to_string(*(AD_DEFAULT_TYPE*)(instr->args[j].data));
-					}
-					else if (instr->args[j].type == '$')
-					{
-						file << '$' << (instr->args[j].data);
-					}
-					else
-					{
+						break;
+					case '$':
+						file << '$'; //break is missing on purpose
+					default:
 						file << (instr->args[j].data);
 					}
-
-					
 				}
 
 				if (i != instructionCnt - 1)
@@ -286,12 +282,12 @@ namespace ADscript
 		}
 	}
 
-	char* program::getVar(const std::string id)
+	char* program::getVar(const arg& var)
 	{
 		node* cur = programMemory.bottom;
 		while (cur)
 		{
-			if (cur->ID == id)
+			if (cur->data == var)
 			{
 				return cur->data.data;
 			}
@@ -300,9 +296,9 @@ namespace ADscript
 		return nullptr;
 	}
 
-	void program::push(const std::string id, const arg val)
+	void program::push(const arg& val)
 	{
-		node* newNode = new node(id, val);
+		node* newNode = new node(val);
 		programMemory.push(newNode);
 	}
 

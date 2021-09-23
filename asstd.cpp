@@ -62,7 +62,7 @@ namespace ADscript
 				return (AD_DEFAULT_TYPE*)vTable.at(arg.data)->data;
 			}
 
-			return (AD_DEFAULT_TYPE*)host->getVar(arg.data);
+			return (AD_DEFAULT_TYPE*)host->getVar(arg);
 		}
 	}
 
@@ -75,13 +75,13 @@ namespace ADscript
 	//note that the varID has already been converted by the compiler to an index
 	void VAR(program* host, arg* args)
 	{
-		host->push(args[0].data, args[0]);
+		host->push(args[0]);
 	}
 
 	//takes 1 arg, named value to delete
 	void DELETE(program* host, arg* args)
 	{
-		host->programMemory.remove(args[0].data);
+		host->programMemory.remove(args[0]);
 	}
 
 	//takes no args, stops program
@@ -162,7 +162,14 @@ namespace ADscript
 
 	//takes 1 arg, a name to mark as a jump location
 	//locations are set after optimizations
-	void MARK(program* host, arg* args) {}
+	void MARK(program* host, arg* args) 
+	{
+		//IMPORTANT, C++ COMPILER WILL REMOVE THIS FUNCTION IF IT DOES NOTHING WHICH BREAKS THE CODE
+		//THIS DOESN'T ACTUALLY DO ANYTHING BUT ENSURES MARK EXISTS
+		#ifdef NDEBUG
+		args->type = 'c'; 
+		#endif
+	}
 	
 	//takes 0 args, does nothing. Mainly exists for optimizations
 	void NONE(program* host, arg* args) {}

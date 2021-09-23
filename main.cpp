@@ -27,7 +27,6 @@ int main()
 
 	for (unsigned int i = 0; i < 10000000; i++)
 	{
-		
 		prgm.run();
 	}
 	

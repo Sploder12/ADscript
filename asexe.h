@@ -40,14 +40,12 @@ namespace ADscript
 
 	struct node
 	{
-		node(const std::string ID, const arg data) noexcept;
+		node(const arg& data) noexcept;
 
 		node* previous = nullptr;
 		node* next = nullptr;
 
-		std::string ID;
 		arg data;
-
 	};
 
 	struct linkedStack
@@ -59,7 +57,7 @@ namespace ADscript
 
 		void pop();
 
-		void remove(const char* id);
+		void remove(arg var);
 	};
 
 	struct program;
@@ -108,9 +106,9 @@ namespace ADscript
 
 		void decompile(const char* filename);
 
-		char* getVar(const std::string id);
+		char* getVar(const arg& var);
 
-		void push(const std::string id, const arg val);
+		void push(const arg& val);
 
 		void pop();
 

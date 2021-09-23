@@ -414,7 +414,6 @@ namespace ADscript
 							{
 								args[i - 1] = arg('v', split[i]);
 							}
-							
 						}
 					}
 
