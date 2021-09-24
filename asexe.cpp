@@ -93,8 +93,8 @@ namespace ADscript
 		delete[] data;
 	}
 
-	node::node(const arg& data) noexcept:
-		data(data) {}
+	node::node(const arg& id, char* data) noexcept:
+		id(id), data(data) {}
 
 	void linkedStack::push(node* elem)
 	{
@@ -134,7 +134,7 @@ namespace ADscript
 		node* cur = bottom;
 		while (cur)
 		{
-			if (cur->data == var)
+			if (cur->id == var)
 			{
 				if (cur->previous)
 				{
@@ -211,7 +211,7 @@ namespace ADscript
 		node* top = other.programMemory.top;
 		while (top)
 		{
-			node* newNode = new node(top->data);
+			node* newNode = new node(*top);
 			programMemory.push(newNode);
 			top = top->next;
 		}
@@ -287,18 +287,18 @@ namespace ADscript
 		node* cur = programMemory.bottom;
 		while (cur)
 		{
-			if (cur->data == var)
+			if (cur->id == var)
 			{
-				return cur->data.data;
+				return cur->data;
 			}
 			cur = cur->previous;
 		}
 		return nullptr;
 	}
 
-	void program::push(const arg& val)
+	void program::push(const arg& id, char* val)
 	{
-		node* newNode = new node(val);
+		node* newNode = new node(id, val);
 		programMemory.push(newNode);
 	}
 

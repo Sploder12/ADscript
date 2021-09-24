@@ -223,9 +223,7 @@ namespace ADscript
 		}
 	}
 
-	//this is the BIG BOY optimizer, it doesn't have customizable optimizations but it does have more meaningful optimizations
-	//It is highly highly recommended that the peephole optimizations are performed prior to this.
-	void fullOptimize(std::vector<instruction*>* instructions)
+	void examineConsts(std::vector<instruction*>* instructions)
 	{
 		std::map<arg, unsigned int> varAccessTable;
 		std::map<arg, instruction*> initLocation;
@@ -240,7 +238,6 @@ namespace ADscript
 						continue;
 					}
 
-
 					if (varAccessTable.count(instr->args[i]) == 0)
 					{
 						varAccessTable.insert(std::pair<arg, unsigned int>(instr->args[i], 0));
@@ -251,7 +248,7 @@ namespace ADscript
 						initLocation.insert(std::pair<arg, instruction*>(instr->args[i], instr));
 						continue;
 					}
-					
+
 					if (
 						(instr->function == SET && i == 0) ||
 						(instr->function == ADD && i == 2) ||
@@ -280,14 +277,7 @@ namespace ADscript
 
 					if (varAccessTable.at(instr->args[i]) <= 0)
 					{
-						const auto initLoc = initLocation.at(instr->args[i])->args[1];
-						const size_t size = strlen(initLoc.data) + 1;
-						char* tmp = new char[size];
-						strcpy_s(tmp, size, initLoc.data);
-						std::swap(tmp, instr->args[i].data);
-						instr->args[i].type = initLoc.type;
-						delete[] tmp;
-						
+						instr->args[i] = arg(initLocation.at(instr->args[i])->args[1]);
 						if (instr->function == DELETE)
 						{
 							instr->args[i].type = 'c';
@@ -307,10 +297,10 @@ namespace ADscript
 				optimize(inits.second);
 			}
 		}
+	}
 
-		varAccessTable.clear();
-		initLocation.clear();
-
+	void removeNone(std::vector<instruction*>* instructions)
+	{
 		std::vector<instruction*> tmp;
 		tmp.reserve(instructions->size());
 
@@ -326,12 +316,71 @@ namespace ADscript
 			}
 		}
 		*instructions = tmp;
-		tmp.clear();
-		tmp.reserve(instructions->size());
+	}
 
-		//@TODO more big boy optimizations
+	//this is the BIG BOY optimizer, it doesn't have customizable optimizations but it does have more meaningful optimizations
+	//It is highly highly recommended that the peephole optimizations are performed prior to this.
+	void fullOptimize(std::vector<instruction*>* instructions)
+	{
+		removeNone(instructions);
 
+		examineConsts(instructions);
 
+		instruction* prev = instructions->front();
+		for (unsigned int i = 1; i < instructions->size(); i++) //remove adjacent conditionals
+		{
+			if ((prev->function == EQUAL || prev->function == NEQUAL) &&
+				(instructions->at(i)->function == EQUAL || instructions->at(i)->function == NEQUAL))
+			{
+				prev->function = getFunctions()[NONE_ID];
+				prev->resize(0);
+				optimize(prev);
+			}
+			prev = instructions->at(i);
+		}
+
+		for (unsigned int i = 0; i < instructions->size(); i++) //remove code that cant be accessed
+		{
+			if (instructions->at(i)->function == JUMP)
+			{
+				for (unsigned int j = i + 1; j < instructions->size(); j++)
+				{
+					if (instructions->at(j)->function == MARK)
+					{
+						if (instructions->at(i)->args[0] == instructions->at(j)->args[0])
+						{
+							instructions->at(i)->function = getFunctions()[NONE_ID];
+							instructions->at(i)->resize(0);
+							optimize(instructions->at(j));
+						}
+						break;
+					}
+					instructions->at(j)->function = getFunctions()[NONE_ID];
+					instructions->at(j)->resize(0);
+					optimize(instructions->at(j));
+				}
+			}
+		}
+
+		for (unsigned int i = 0; i < instructions->size(); i++) //remove marks with no jumps
+		{
+			if (instructions->at(i)->function == MARK)
+			{
+				for (unsigned int j = 0; j < instructions->size(); j++)
+				{
+					if ((instructions->at(j)->function == JUMP || instructions->at(j)->function == CJUMP) &&
+						(instructions->at(i)->args[0] == instructions->at(j)->args[0]))
+					{
+						break;
+					}
+				}
+				instructions->at(i)->function = NONE;
+				instructions->at(i)->resize(0);
+				optimize(instructions->at(i));
+			}
+		}
+
+		removeNone(instructions);
 	}
 
 	//converts the marker into a line number

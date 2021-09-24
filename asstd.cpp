@@ -72,10 +72,9 @@ namespace ADscript
 	}
 
 	//takes 2 args, a varID and initial value
-	//note that the varID has already been converted by the compiler to an index
 	void VAR(program* host, arg* args)
 	{
-		host->push(args[0]);
+		host->push(args[0], (char*)(getArgPtr(host, args[1])));
 	}
 
 	//takes 1 arg, named value to delete

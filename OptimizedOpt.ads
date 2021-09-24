@@ -1,4 +1,4 @@
-PRINT $cVar
-JUMP 3
-PRINT $cVar
-MARK 3
+VAR num $cVar
+PRINT num
+ADD 1 num num
+SET $cVar num
