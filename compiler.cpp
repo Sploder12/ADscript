@@ -214,7 +214,7 @@ namespace ADscript
 	{
 		try
 		{
-			auto func = optimizationTable.at(instr->function);
+			const auto func = optimizationTable.at(instr->function);
 			func(instr);
 		}
 		catch (...)

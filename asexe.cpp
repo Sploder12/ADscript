@@ -36,8 +36,7 @@ namespace ADscript
 		char* cval = (char*)new int(data);
 		std::copy(cval, cval + sizeof(int), this->data);
 		delete (int*)cval;
-	}
-	*/
+	}*/
 
 	arg::arg(arg&& other) noexcept :
 		type(std::move(other.type)),

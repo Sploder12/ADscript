@@ -9,3 +9,6 @@ SET 100 num
 DELETE num
 MARK art
 SET $cVar num
+EQUAL num num
+NEQUAL $cVar num
+EQUAL $cVar num

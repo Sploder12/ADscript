@@ -27,7 +27,7 @@ The compiler will ignore that line (; MUST BE THE FIRST CHARACTER ON HE LINE!!!!
 Function Registering must be done prior to compiling the program.  
 You must first make a function before you can register it.  
 
-All functions must be of type `void(*)(program*, char**)`
+All functions must be of type `void(*)(program*, arg*)`
 (returns void, takes in the host program and array of byte arrays as args)  
 
 `ADscript::registerFunction` can then be called with the following parameters:  
@@ -50,6 +50,12 @@ Optimizations will only replace existing instructions with more fitting ones.
 For example `ADD 0 foo foo` would be replaced with `NONE`.  
 Optimizations should not change program execution but doing so is legal.  
 Optimizations do not take into account previous or subsequent instructions. It works one at a time.
+
+The full optimizer will remove NONE instructions and shorten the following:  
+MARKers that have no associated JUMPs (removes)  
+VARs that are actually constants (removes and reruns peephole)  
+adjacent EQUALS and NEQUALS (all but last is removed)  
+JUMPs that skip instructions (all skipped instructions and the JUMP is removed)
 
 ### Using Registered Stuff
 
