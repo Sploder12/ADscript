@@ -55,7 +55,7 @@ The full optimizer will remove NONE instructions and shorten the following:
 MARKers that have no associated JUMPs (removes)  
 VARs that are actually constants (removes and reruns peephole)  
 adjacent EQUALS and NEQUALS (all but last is removed)  
-JUMPs that skip instructions (all skipped instructions and the JUMP is removed)
+JUMPs that skip instructions (all skipped instructions and the JUMP is removed)  
 instructions that don't do anything by themselves at the end are removed. (VAR, NONE, EQUAL, NEQUAL, END)
 
 ### Using Registered Stuff

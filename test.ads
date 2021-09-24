@@ -12,3 +12,4 @@ SET $cVar num
 EQUAL num num
 NEQUAL $cVar num
 EQUAL $cVar num
+TEST

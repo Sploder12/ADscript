@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
 
 namespace ADscript
 {
@@ -448,40 +449,52 @@ namespace ADscript
 				{
 					const std::pair<unsigned int, unsigned int> idncnt = fTable.at(split[0]);
 					const unsigned int iid = idncnt.first;
+					const size_t size = split.size() - 1;
 
-					if (split.size() - 1 != idncnt.second)
+					if (size != idncnt.second)
 					{
-						throw "Compiler Error: Invalid Argument Count, Excpected: " + std::to_string(idncnt.second) + " Found:" + std::to_string(split.size() - 1) + '\n';
+						std::cout << "In file " << filename << '\n';
+						std::cout << "ADCompiler Error: Invalid Argument Count, Excpected: " << idncnt.second << " Found: " << size << '\n';
+						return program();
 					}
 
-					arg* args = new arg[split.size() - 1];
+					arg* args = new arg[size];
 
-					for (unsigned int i = 1; i < split.size(); i++)
+					for (unsigned int i = 0; i < size; i++)
 					{
-						if (isNumeric(split[i][0]))
+						const std::string& tmp = split[i + 1];
+						if (isNumeric(tmp[0]))
 						{
-							int val = std::stol(split[i]);
-							args[i - 1] = arg('c', val);
+							int val = std::stol(tmp);
+							args[i] = arg('c', val);
 						}
 						else
 						{
-							if (split[i][0] == '$')
+							if (tmp[0] == '$')
 							{
-								args[i - 1] = arg('$', split[i].substr(1, split[i].size()-1));
+								args[i] = arg('$', tmp.substr(1, tmp.size() - 1));
 							}
 							else
 							{
-								args[i - 1] = arg('v', split[i]);
+								args[i] = arg('v', tmp);
 							}
 						}
 					}
 
-					instructions.push_back(new instruction{ getFunctions()[iid], unsigned int(split.size() - 1), args});
+					instructions.push_back(new instruction{ getFunctions()[iid], unsigned int(size), args});
 					optimize(instructions.back());
+				}
+				catch (std::out_of_range err)
+				{
+					std::cout << "In file " << filename << '\n';
+					std::cout << "ADCompiler Error: Invalid Function Name " << split[0] << " | " << err.what() << '\n';
+					return program();
 				}
 				catch (...)
 				{
-					throw "Compiler Error: Invalid Function Name " + split[0] + '\n';
+					std::cout << "In file " << filename << '\n';
+					std::cout << "ADCompiler Error: Unknown Error, Possible optimizer error " << instructions.back()->toStr() << '\n';
+					return program();
 				}
 			}
 
@@ -501,6 +514,6 @@ namespace ADscript
 			
 			return opt;
 		}
-		throw "Compiler Error: Could Not Open File\n";
+		std::cout << "ADCompiler Error: Could Not Open File " << filename << '\n';
 	}
 }

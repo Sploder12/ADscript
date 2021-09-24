@@ -185,6 +185,17 @@ namespace ADscript
 		function(host, this->args);
 	}
 
+	std::string instruction::toStr()
+	{
+		std::string opt = "Instruction:" + getFunctionByPtr(this->function) + " - ArgCnt: " + std::to_string(this->argCnt) + " - Args: ";
+		for (unsigned int j = 0; j < this->argCnt; j++)
+		{
+			opt += this->args[j].type + std::string(this->args[j].data) + " ";
+		}
+		opt += "\n";
+		return opt;
+	}
+
 	program::program(program&& other) noexcept
 		:curInstruction(std::move(other.curInstruction)),
 		programMemory(std::move(other.programMemory)),
@@ -236,13 +247,7 @@ namespace ADscript
 	{
 		for (unsigned int i = 0; i < instructionCnt; i++)
 		{
-			const instruction* instr = instructions[i];
-			std::cout << "Instruction " << i << " Function:" << instr->function << " with ArgCount:" << instr->argCnt << " Args: ";
-			for (unsigned int j = 0; j < instr->argCnt; j++)
-			{
-				std::cout << instr->args[j].type << instr->args[j].data << " ";
-			}
-			std::cout << "\n";
+			std::cout << instructions[i]->toStr();
 		}
 	}
 

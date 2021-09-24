@@ -11,8 +11,12 @@
 */
 
 #include "compiler.h"
-
 #include <iostream>
+
+void doTest(ADscript::program* host, ADscript::arg* args)
+{
+	std::cout << "We did it!";
+}
 
 int main()
 {
@@ -21,7 +25,11 @@ int main()
 
 	ADscript::registerVariable("cVar", (char*)&myVar);
 
+	ADscript::registerFunction("TEST", 0, doTest);
+
 	ADscript::program prgm = ADscript::compile("test.ads");
+
+	prgm.dumpInstructions();
 
 	prgm.decompile("OptimizedOpt.ads");
 

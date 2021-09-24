@@ -80,6 +80,8 @@ namespace ADscript
 
 		void exe(program* host);
 
+		std::string toStr();
+
 		~instruction();
 	};
 
