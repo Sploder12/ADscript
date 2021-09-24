@@ -36,7 +36,7 @@ namespace ADscript
 
 	bool isSTDfunc(void(*func)(program*, arg*))
 	{
-		auto funcs = getSTDFunctions();
+		auto& funcs = getSTDFunctions();
 		for (auto fnc : funcs)
 		{
 			if (func == fnc)

@@ -40,7 +40,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -58,7 +57,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -92,7 +90,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -125,7 +122,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -158,7 +154,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -191,7 +186,6 @@ namespace ADscript
 		{
 			instr->function = getFunctions()[NONE_ID];
 			instr->resize(0);
-			optimize(instr);
 		}
 	}
 
@@ -288,13 +282,33 @@ namespace ADscript
 			}
 		}
 
-		for (auto inits : initLocation) //remove VAR for constant value
+		instruction* tmp = instructions->back();
+		while (tmp)
+		{
+			if ((tmp->function == END) ||
+				(tmp->function == EQUAL) ||
+				(tmp->function == NEQUAL) ||
+				(tmp->function == VAR) ||
+				(tmp->function == NONE))
+			{
+				tmp->function = getFunctions()[NONE_ID];
+				tmp->resize(0);
+				instructions->pop_back();
+				tmp = instructions->back();
+			}
+			else
+			{
+				tmp = nullptr;
+				break;
+			}
+		}
+
+		for (auto& inits : initLocation) //remove VAR for constant value
 		{
 			if (varAccessTable.at(inits.first) <= 0)
 			{
 				inits.second->function = getFunctions()[NONE_ID];
 				inits.second->resize(0);
-				optimize(inits.second);
 			}
 		}
 	}
@@ -334,7 +348,6 @@ namespace ADscript
 			{
 				prev->function = getFunctions()[NONE_ID];
 				prev->resize(0);
-				optimize(prev);
 			}
 			prev = instructions->at(i);
 		}
@@ -351,13 +364,11 @@ namespace ADscript
 						{
 							instructions->at(i)->function = getFunctions()[NONE_ID];
 							instructions->at(i)->resize(0);
-							optimize(instructions->at(j));
 						}
 						break;
 					}
 					instructions->at(j)->function = getFunctions()[NONE_ID];
 					instructions->at(j)->resize(0);
-					optimize(instructions->at(j));
 				}
 			}
 		}
@@ -376,7 +387,6 @@ namespace ADscript
 				}
 				instructions->at(i)->function = NONE;
 				instructions->at(i)->resize(0);
-				optimize(instructions->at(i));
 			}
 		}
 
