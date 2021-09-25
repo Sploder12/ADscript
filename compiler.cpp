@@ -201,7 +201,7 @@ namespace ADscript
 
 	void registerOptimization(void(*instr)(program*, arg*), void(*func)(instruction*))
 	{
-		optimizationTable.insert(std::pair<void(*)(program*, arg*), void(*)(instruction*)>(instr, func));
+		optimizationTable.emplace(instr, func);
 	}
 
 	//peephole optimizer, good for getting things ready for the big boy optimizer
@@ -212,7 +212,7 @@ namespace ADscript
 			const auto func = optimizationTable.at(instr->function);
 			func(instr);
 		}
-		catch (...)
+		catch (std::out_of_range)
 		{
 			//This just means no optimization exists, not an error
 		}
@@ -235,12 +235,12 @@ namespace ADscript
 
 					if (varAccessTable.count(instr->args[i]) == 0)
 					{
-						varAccessTable.insert(std::pair<arg, unsigned int>(instr->args[i], 0));
+						varAccessTable.emplace(instr->args[i], 0);
 					}
 
 					if (instr->function == VAR)
 					{
-						initLocation.insert(std::pair<arg, instruction*>(instr->args[i], instr));
+						initLocation.emplace(instr->args[i], instr);
 						continue;
 					}
 
@@ -403,7 +403,7 @@ namespace ADscript
 		{
 			if (instructions[i]->function == MARK)
 			{
-				markers.insert(std::pair<arg, unsigned int>(instructions[i]->args[0], i));
+				markers.emplace(instructions[i]->args[0], i);
 				arg tmp = arg('c', (AD_DEFAULT_TYPE&)i);
 				std::swap(tmp, instructions[i]->args[0]);
 			}
@@ -515,5 +515,6 @@ namespace ADscript
 			return opt;
 		}
 		std::cout << "ADCompiler Error: Could Not Open File " << filename << '\n';
+		return program();
 	}
 }
