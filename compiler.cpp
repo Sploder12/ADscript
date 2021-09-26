@@ -163,7 +163,7 @@ namespace ADscript
 		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //dividing two consts
 		{
 			instr->function = getFunctions()[SET_ID];
-			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) + getConstVal(instr->args[1]);
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) / getConstVal(instr->args[1]);
 			std::swap(instr->args[0], instr->args[2]);
 			instr->resize(2);
 			optimize(instr);
@@ -190,6 +190,33 @@ namespace ADscript
 		}
 	}
 
+	void optimizeMOD(instruction* instr)
+	{
+		if (instr->args[0].type == 'c' && instr->args[1].type == 'c') //modulus of two consts
+		{
+			instr->function = getFunctions()[SET_ID];
+			*(AD_DEFAULT_TYPE*)(instr->args[1].data) = getConstVal(instr->args[0]) % getConstVal(instr->args[1]);
+			std::swap(instr->args[0], instr->args[2]);
+			instr->resize(2);
+			optimize(instr);
+		}
+		else if (instr->args[1].type == 'c' && getConstVal(instr->args[1]) == 1) //modulus 1
+		{
+			instr->function = getFunctions()[SET_ID];
+			std::swap(instr->args[0], instr->args[2]);
+			instr->args[1] = arg('c', 0);
+			instr->resize(2);
+			optimize(instr);
+		}
+		else if (instr->args[2].type == 'c') //setting const to value
+		{
+			instr->function = getFunctions()[NONE_ID];
+			instr->resize(0);
+		}
+
+		//cant optimize modulus of 1 since edge-case of 1 % 1 exists
+	}
+
 	std::map<void(*)(program*, arg*), void(*)(instruction*)> optimizationTable = {
 		{DELETE, optimizeDELETE},
 		{SET, optimizeSET},
@@ -197,6 +224,7 @@ namespace ADscript
 		{SUB, optimizeSUB},
 		{MULT, optimizeMULT},
 		{DIV, optimizeDIV},
+		{MOD, optimizeMOD}
 	};
 
 	void registerOptimization(void(*instr)(program*, arg*), void(*func)(instruction*))
@@ -250,6 +278,7 @@ namespace ADscript
 						(instr->function == SUB && i == 2) ||
 						(instr->function == MULT && i == 2) ||
 						(instr->function == DIV && i == 2) ||
+						(instr->function == MOD && i == 2) ||
 						(!isSTDfunc(instr->function)) //optimizer has no knowledge whether or not a custom function sets a value so we assume it does
 						)
 					{

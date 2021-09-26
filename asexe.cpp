@@ -19,7 +19,7 @@ namespace ADscript
 		this->data[data.size()] = '\0';
 	}
 
-	arg::arg(const char type, AD_DEFAULT_TYPE& data) :
+	arg::arg(const char type, AD_DEFAULT_TYPE data) :
 		type(type)
 	{
 		this->data = new char[sizeof(AD_DEFAULT_TYPE)];

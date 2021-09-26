@@ -24,6 +24,7 @@ namespace ADscript
 	void SUB(program* host, arg* args);
 	void MULT(program* host, arg* args);
 	void DIV(program* host, arg* args);
+	void MOD(program* host, arg* args);
 
 	void EQUAL(program* host, arg* args);
 	void NEQUAL(program* host, arg* args);
@@ -35,5 +36,4 @@ namespace ADscript
 	
 	void NONE(program* host, arg* args);
 }
-
 #endif

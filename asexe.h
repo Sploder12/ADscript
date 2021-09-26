@@ -18,7 +18,7 @@ namespace ADscript
 
 		arg(const char type, const std::string data);
 
-		arg(const char type, AD_DEFAULT_TYPE& data);
+		arg(const char type, AD_DEFAULT_TYPE data);
 
 		//arg(char type, int data);
 

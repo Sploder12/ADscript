@@ -57,7 +57,7 @@ namespace ADscript
 		{
 			if (arg.type == '$')
 			{
-				auto& vTable = getVariableTable();
+				const auto& vTable = getVariableTable();
 
 				return (AD_DEFAULT_TYPE*)vTable.at(arg.data)->data;
 			}
@@ -123,6 +123,12 @@ namespace ADscript
 	void DIV(program* host, arg* args)
 	{
 		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) / getArgVal(host, args[1]);
+	}
+
+	//takes 3 args, two vals to modulus and place to store
+	void MOD(program* host, arg* args)
+	{
+		*getArgPtr(host, args[2]) = getArgVal(host, args[0]) % getArgVal(host, args[1]);
 	}
 
 	//takes 2 args, two vals to compare

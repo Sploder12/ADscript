@@ -16,12 +16,13 @@
 #define SUB_ID 6
 #define MULT_ID 7
 #define DIV_ID 8
-#define EQUAL_ID 9
-#define NEQUAL_ID 10
-#define JUMP_ID 11
-#define CJUMP_ID 12
-#define MARK_ID 13
-#define NONE_ID 14
+#define MOD_ID 9
+#define EQUAL_ID 10
+#define NEQUAL_ID 11
+#define JUMP_ID 12
+#define CJUMP_ID 13
+#define MARK_ID 14
+#define NONE_ID 15
 
 namespace ADscript
 {
