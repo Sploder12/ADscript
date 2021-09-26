@@ -125,6 +125,7 @@ namespace ADscript
 			bottom->next = nullptr;
 		}
 
+		delete[] removed->data;
 		delete removed;
 	}
 
@@ -138,25 +139,26 @@ namespace ADscript
 				if (cur->previous)
 				{
 					cur->previous->next = cur->next;
-				}
-				else
-				{
-					top = nullptr;
+					if (!cur->next)
+					{
+						bottom = cur->previous;
+					}
 				}
 
 				if (cur->next)
 				{
 					cur->next->previous = cur->previous;
-				}
-				else
-				{
-					bottom = nullptr;
+					if (!cur->previous)
+					{
+						top = cur->next;
+					}
 				}
 
 				break;
 			}
 			cur = cur->previous;
 		}
+		delete[] cur->data;
 		delete cur;
 	}
 
@@ -173,6 +175,7 @@ namespace ADscript
 		arg* tmp = new arg[size];
 		for (unsigned int i = 0; i < std::min(size, argCnt); i++)
 		{
+			tmp[i].data = nullptr;
 			std::swap(tmp[i], this->args[i]);
 		}
 		delete[] args;

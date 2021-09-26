@@ -268,7 +268,14 @@ namespace ADscript
 
 					if (instr->function == VAR)
 					{
-						initLocation.emplace(instr->args[i], instr);
+						if (initLocation.count(instr->args[i]) == 0)
+						{
+							initLocation.emplace(instr->args[i], instr);
+						}
+						else
+						{
+							varAccessTable.at(instr->args[i]) += 1;
+						}
 						continue;
 					}
 
@@ -313,7 +320,7 @@ namespace ADscript
 		}
 
 		instruction* tmp = instructions->back();
-		while (tmp)
+		while (tmp) //remove stuff that does nothing when at the end
 		{
 			if ((tmp->function == END) ||
 				(tmp->function == EQUAL) ||

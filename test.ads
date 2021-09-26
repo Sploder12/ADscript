@@ -1,15 +1,7 @@
-VAR num $cVar
-NONE
-PRINT num
-ADD 1 num num
-;this is a comment
-JUMP art
-PRINT num
-SET 100 num
-DELETE num
-MARK art
+VAR num 50
+VAR num 20
 SET $cVar num
-EQUAL num num
-NEQUAL $cVar num
-EQUAL $cVar num
-TEST
+PRINT $cVar
+DELETE num
+SET $cVar num
+PRINT $cVar

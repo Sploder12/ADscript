@@ -74,7 +74,7 @@ namespace ADscript
 	//takes 2 args, a varID and initial value
 	void VAR(program* host, arg* args)
 	{
-		host->push(args[0], (char*)(getArgPtr(host, args[1])));
+		host->push(args[0], (char*)new AD_DEFAULT_TYPE(getArgVal(host, args[1])));
 	}
 
 	//takes 1 arg, named value to delete

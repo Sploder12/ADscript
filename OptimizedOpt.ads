@@ -1,6 +1,7 @@
-VAR num $cVar
-PRINT num
-ADD 1 num num
+VAR num 50
+VAR num 20
 SET $cVar num
-EQUAL $cVar num
-TEST
+PRINT $cVar
+DELETE num
+SET $cVar num
+PRINT $cVar
