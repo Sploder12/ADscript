@@ -235,6 +235,9 @@ namespace ADscript
 		while (curInstruction < instructionCnt)
 		{
 			instructions[curInstruction]->exe(this);
+			#ifdef _DEBUG
+			dumpStack(); //Good for debugging and flooding the console
+			#endif
 			curInstruction++;
 		}
 
@@ -252,6 +255,17 @@ namespace ADscript
 		{
 			std::cout << instructions[i]->toStr();
 		}
+	}
+
+	void program::dumpStack()
+	{
+		auto cur = programMemory.top;
+		while (cur)
+		{
+			std::cout << "Arg " << cur->id.data << " with value " << *(AD_DEFAULT_TYPE*)cur->data << '\n';
+			cur = cur->next;
+		}
+		std::cout << '\n';
 	}
 
 	void program::decompile(const char* filename)

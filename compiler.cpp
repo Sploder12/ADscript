@@ -268,11 +268,11 @@ namespace ADscript
 
 					if (instr->function == VAR)
 					{
-						if (initLocation.count(instr->args[i]) == 0)
+						if (initLocation.count(instr->args[i]) == 0 && i == 0)
 						{
 							initLocation.emplace(instr->args[i], instr);
 						}
-						else
+						else if(i == 0)
 						{
 							varAccessTable.at(instr->args[i]) += 1;
 						}
@@ -301,7 +301,7 @@ namespace ADscript
 			{
 				if (varAccessTable.count(instr->args[i]) == 1)
 				{
-					if (instr->function == VAR)
+					if (instr->function == VAR && instr->args[0] == instr->args[i])
 					{
 						continue;
 					}
@@ -325,6 +325,8 @@ namespace ADscript
 			if ((tmp->function == END) ||
 				(tmp->function == EQUAL) ||
 				(tmp->function == NEQUAL) ||
+				(tmp->function == LESS) ||
+				(tmp->function == GREAT) ||
 				(tmp->function == VAR) ||
 				(tmp->function == NONE))
 			{
@@ -369,6 +371,26 @@ namespace ADscript
 		*instructions = tmp;
 	}
 
+	void removeJumplessMarks(std::vector<instruction*>* instructions)
+	{
+		for (unsigned int i = 0; i < instructions->size(); i++) //remove marks with no jumps
+		{
+			if (instructions->at(i)->function == MARK)
+			{
+				for (unsigned int j = 0; j < instructions->size(); j++)
+				{
+					if ((instructions->at(j)->function == JUMP || instructions->at(j)->function == CJUMP) &&
+						(instructions->at(i)->args[0] == instructions->at(j)->args[0]))
+					{
+						return;
+					}
+				}
+				instructions->at(i)->function = NONE;
+				instructions->at(i)->resize(0);
+			}
+		}
+	}
+
 	//this is the BIG BOY optimizer, it doesn't have customizable optimizations but it does have more meaningful optimizations
 	//It is highly highly recommended that the peephole optimizations are performed prior to this.
 	void fullOptimize(std::vector<instruction*>* instructions)
@@ -380,8 +402,8 @@ namespace ADscript
 		instruction* prev = instructions->front();
 		for (unsigned int i = 1; i < instructions->size(); i++) //remove adjacent conditionals
 		{
-			if ((prev->function == EQUAL || prev->function == NEQUAL) &&
-				(instructions->at(i)->function == EQUAL || instructions->at(i)->function == NEQUAL))
+			if ((prev->function == EQUAL || prev->function == NEQUAL || prev->function == LESS || prev->function == GREAT) &&
+				(instructions->at(i)->function == EQUAL || instructions->at(i)->function == NEQUAL || instructions->at(i)->function == LESS || instructions->at(i)->function == GREAT))
 			{
 				prev->function = getFunctions()[NONE_ID];
 				prev->resize(0);
@@ -410,22 +432,7 @@ namespace ADscript
 			}
 		}
 
-		for (unsigned int i = 0; i < instructions->size(); i++) //remove marks with no jumps
-		{
-			if (instructions->at(i)->function == MARK)
-			{
-				for (unsigned int j = 0; j < instructions->size(); j++)
-				{
-					if ((instructions->at(j)->function == JUMP || instructions->at(j)->function == CJUMP) &&
-						(instructions->at(i)->args[0] == instructions->at(j)->args[0]))
-					{
-						break;
-					}
-				}
-				instructions->at(i)->function = NONE;
-				instructions->at(i)->resize(0);
-			}
-		}
+		removeJumplessMarks(instructions);
 
 		removeNone(instructions);
 	}
@@ -447,7 +454,7 @@ namespace ADscript
 
 		for (int i = 0; i < instructionCnt; i++)
 		{
-			if (instructions[i]->function == JUMP)
+			if (instructions[i]->function == JUMP || instructions[i]->function == CJUMP)
 			{
 				arg tmp = arg('c', (AD_DEFAULT_TYPE&)markers.at(instructions[i]->args[0]));
 				std::swap(tmp, instructions[i]->args[0]);
@@ -490,7 +497,7 @@ namespace ADscript
 					if (size != idncnt.second)
 					{
 						std::cout << "In file " << filename << '\n';
-						std::cout << "ADCompiler Error: Invalid Argument Count, Excpected: " << idncnt.second << " Found: " << size << '\n';
+						std::cout << "ADCompiler Error: Invalid Argument Count for " << split[0] << ", Excpected: " << idncnt.second << " Found: " << size << '\n';
 						return program();
 					}
 

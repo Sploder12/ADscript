@@ -28,6 +28,8 @@ namespace ADscript
 
 	void EQUAL(program* host, arg* args);
 	void NEQUAL(program* host, arg* args);
+	void LESS(program* host, arg* args);
+	void GREAT(program* host, arg* args);
 
 	void JUMP(program* host, arg* args);
 	void CJUMP(program* host, arg* args);

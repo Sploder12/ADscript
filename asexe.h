@@ -107,6 +107,8 @@ namespace ADscript
 
 		void dumpInstructions();
 
+		void dumpStack();
+
 		void decompile(const char* filename);
 
 		char* getVar(const arg& var);

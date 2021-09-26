@@ -145,6 +145,21 @@ namespace ADscript
 		host->comparisonRet = getArgVal(host, args[0]) != getArgVal(host, args[1]);
 	}
 
+	//takes 2 args, two vals to compare
+	//result can be found in host.comparisonRet
+	void LESS(program* host, arg* args)
+	{
+		host->comparisonRet = getArgVal(host, args[0]) < getArgVal(host, args[1]);
+	}
+
+	//takes 2 args, two vals to compare
+	//result can be found in host.comparisonRet
+	void GREAT(program* host, arg* args)
+	{
+		host->comparisonRet = getArgVal(host, args[0]) > getArgVal(host, args[1]);
+	}
+
+
 	//takes 1 args, an instruction to jump to
 	void JUMP(program* host, arg* args)
 	{

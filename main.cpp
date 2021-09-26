@@ -21,7 +21,7 @@ void doTest(ADscript::program* host, ADscript::arg* args)
 int main()
 {
 	
-	int myVar = 200;
+	int myVar = 3;
 
 	ADscript::registerVariable("cVar", (char*)&myVar);
 
@@ -33,10 +33,12 @@ int main()
 
 	prgm.decompile("OptimizedOpt.ads");
 
-	for (unsigned int i = 0; i < 10000000; i++)
+	for (unsigned int i = 0; i < 1000; i++)
 	{
-		
+		std::cout << "factorial of " << myVar << ": ";
 		prgm.run();
+		std::cout << myVar << '\n';
+		//factorial of 720 causes an overflow
 	}
 	
 	
