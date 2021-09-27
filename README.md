@@ -136,6 +136,20 @@ value, value
 The result is stored inside the programs comparisonRet bool.  
 comparisonRet is used by other functions such as CJUMP.
 
+**LESS**  
+Compares two values using less than  
+Takes 2 values,  
+value, value  
+The result is stored inside the programs comparisonRet bool.  
+comparisonRet is used by other functions such as CJUMP.
+
+**GREAT**  
+Compares two values using greater than  
+Takes 2 values,  
+value, value  
+The result is stored inside the programs comparisonRet bool.  
+comparisonRet is used by other functions such as CJUMP.
+
 **JUMP**  
 Jumps to a marker.  
 Takes 1 value,  

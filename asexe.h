@@ -92,7 +92,7 @@ namespace ADscript
 
 		//program memory consists of a cstr ID and a byte array value
 		//memory is handled for you, the value is newed into existence and deleted out of it
-		//this linkd list is treated like a stack, dont worry about it.
+		//this linked list is treated like a stack, dont worry about it.
 		linkedStack programMemory;
 
 		//array of instruction pointers
